@@ -117,20 +117,21 @@ class UserModel {
    * Update user profile (safe profile fields only)
    */
   static async updateProfile(id, { first_name, last_name, profile_picture, marital_status, age, phone_number, children_count, bio }) {
-    // If status is not Married, set children_count to 0 to respect conditional rules
+    // 3NF: full_name is no longer updated here manually.
+    // The `sync_full_name` DB trigger automatically keeps full_name in sync
+    // whenever first_name or last_name changes.
     const finalChildrenCount = marital_status === 'Married' ? children_count : 0;
 
     const sql = `
       UPDATE users
-      SET first_name = COALESCE($1, first_name),
-          last_name = COALESCE($2, last_name),
+      SET first_name      = COALESCE($1, first_name),
+          last_name       = COALESCE($2, last_name),
           profile_picture = COALESCE($3, profile_picture),
-          marital_status = COALESCE($4, marital_status),
-          age = COALESCE($5, age),
-          phone_number = COALESCE($6, phone_number),
-          children_count = COALESCE($7, children_count),
-          bio = COALESCE($8, bio),
-          full_name = COALESCE($1 || ' ' || $2, full_name)
+          marital_status  = COALESCE($4::marital_status, marital_status),
+          age             = COALESCE($5, age),
+          phone_number    = COALESCE($6, phone_number),
+          children_count  = COALESCE($7, children_count),
+          bio             = COALESCE($8, bio)
       WHERE id = $9 AND status != 'deleted'
       RETURNING id, full_name, username, email, status, is_verified, updated_at,
                 first_name, last_name, profile_picture, marital_status,

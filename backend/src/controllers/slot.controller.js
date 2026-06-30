@@ -93,17 +93,28 @@ const createSlot = async (req, res, next) => {
  */
 const updateSlot = async (req, res, next) => {
   try {
-    const { startTime, endTime, durationMins, price, isAvailable, notes } = req.body;
+    // 3NF: accept slotState ENUM value instead of isAvailable boolean
+    const { startTime, endTime, durationMins, price, slotState, notes } = req.body;
 
     const existing = await SlotModel.findById(req.params.id);
     if (!existing) return next(new AppError('Slot not found', 404, 'SLOT_NOT_FOUND'));
 
-    if (existing.is_booked) {
-      return next(new AppError('Cannot modify a booked slot', 400, 'SLOT_BOOKED'));
+    // Cannot modify a slot that is reserved or confirmed booked
+    if (existing.slot_state === 'reserved' || existing.slot_state === 'booked') {
+      return next(new AppError('Cannot modify a reserved or booked slot', 400, 'SLOT_BOOKED'));
+    }
+
+    // Validate slotState value if provided
+    const validStates = ['available', 'reserved', 'booked', 'disabled'];
+    if (slotState && !validStates.includes(slotState)) {
+      return next(new AppError(
+        `Invalid slotState. Must be one of: ${validStates.join(', ')}`,
+        400, 'VALIDATION_ERROR'
+      ));
     }
 
     const slot = await SlotModel.update(req.params.id, {
-      startTime, endTime, durationMins, price, isAvailable, notes,
+      startTime, endTime, durationMins, price, slotState, notes,
     });
 
     res.json({ success: true, data: slot, message: 'Slot updated successfully' });

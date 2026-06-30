@@ -1,13 +1,11 @@
 'use strict';
 
-const { Pool } = require('pg');
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT, 10) || 5432,
-  database: process.env.DB_NAME || 'rafiq_db',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD,
-});
+/**
+ * VideoModel
+ * NOTE: Uses the shared connection pool from connection.js.
+ * The previous private `new Pool(...)` was a resource leak — fixed in 3NF migration.
+ */
+const { pool } = require('../database/connection');
 
 const fs = require('fs');
 const path = require('path');

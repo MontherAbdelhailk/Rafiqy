@@ -10,13 +10,32 @@ const ChatModel = require('../models/chat.model');
  */
 async function sendPushNotification(receiverId, { title, body, data }) {
   try {
-    const tokens = await ChatModel.getFcmTokens(receiverId);
-    if (!tokens || tokens.length === 0) {
-      logger.info(`🔔 No registered FCM tokens for user ${receiverId}. Skipping push notification.`);
+    let tokens = [];
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (receiverId === 'admin') {
+      // 3NF / Security check: resolve all admin tokens from users with role 'admin'
+      const { query } = require('../database/connection');
+      const adminTokensRes = await query(`
+        SELECT uft.fcm_token 
+        FROM user_fcm_tokens uft
+        JOIN users u ON uft.user_id = u.id
+        WHERE u.role = 'admin'
+      `);
+      tokens = adminTokensRes.rows.map(row => row.fcm_token);
+    } else if (uuidRegex.test(receiverId)) {
+      tokens = await ChatModel.getFcmTokens(receiverId);
+    } else {
+      logger.warn(`🔔 Invalid receiverId for push notification: ${receiverId}. Skipping.`);
       return;
     }
 
-    logger.info(`🔔 Sending push notification to user ${receiverId} (Tokens count: ${tokens.length})`);
+    if (!tokens || tokens.length === 0) {
+      logger.info(`🔔 No registered FCM tokens for receiver: ${receiverId}. Skipping push notification.`);
+      return;
+    }
+
+    logger.info(`🔔 Sending push notification to receiver ${receiverId} (Tokens count: ${tokens.length})`);
 
     // For production-readiness, if a Firebase service configuration exists, we can call it.
     // As a fallback, we log the notification content and simulate successful dispatch.

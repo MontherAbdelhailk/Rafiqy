@@ -7,6 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "db:migrate": "node src/database/migrate.js",
+    "db:migrate-3nf": "node src/database/migration_3nf.js",
     "db:seed": "node src/database/seed.js"
   },
   "keywords": [

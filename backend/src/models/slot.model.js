@@ -9,13 +9,13 @@ class SlotModel {
   static async getAvailableSlots({ from, to } = {}) {
     const fromDate = from || new Date().toISOString();
     const params = [fromDate];
+    // 3NF: slot_state ENUM replaces the dual (is_available, is_booked) boolean flags
     let sql = `
       SELECT
         id, start_time, end_time, duration_mins, price,
-        is_available, is_booked, notes, created_at
+        slot_state, notes, created_at
       FROM consultation_slots
-      WHERE is_available = TRUE
-        AND is_booked = FALSE
+      WHERE slot_state = 'available'
         AND start_time >= $1
     `;
 
@@ -56,8 +56,10 @@ class SlotModel {
 
   /**
    * Update a slot (Admin only)
+   * @param {string} id
+   * @param {{ startTime?, endTime?, durationMins?, price?, slotState?, notes? }} fields
    */
-  static async update(id, { startTime, endTime, durationMins, price, isAvailable, notes }) {
+  static async update(id, { startTime, endTime, durationMins, price, slotState, notes }) {
     const fields = [];
     const values = [];
     let paramIdx = 1;
@@ -66,7 +68,8 @@ class SlotModel {
     if (endTime !== undefined)     { fields.push(`end_time = $${paramIdx++}`);      values.push(endTime); }
     if (durationMins !== undefined){ fields.push(`duration_mins = $${paramIdx++}`); values.push(durationMins); }
     if (price !== undefined)       { fields.push(`price = $${paramIdx++}`);         values.push(price); }
-    if (isAvailable !== undefined) { fields.push(`is_available = $${paramIdx++}`);  values.push(isAvailable); }
+    // 3NF: use slot_state ENUM instead of is_available boolean
+    if (slotState !== undefined)   { fields.push(`slot_state = $${paramIdx++}::slot_state`); values.push(slotState); }
     if (notes !== undefined)       { fields.push(`notes = $${paramIdx++}`);         values.push(notes); }
 
     if (fields.length === 0) return this.findById(id);
@@ -80,22 +83,26 @@ class SlotModel {
   }
 
   /**
-   * Mark a slot as booked / un-booked
+   * Mark a slot as reserved/available (legacy helper — prefer direct slot_state updates)
+   * @param {string} id
+   * @param {boolean} booked - true = reserved, false = available
    */
   static async markBooked(id, booked = true) {
+    // 3NF: map boolean to slot_state ENUM
+    const newState = booked ? 'reserved' : 'available';
     const result = await query(
-      'UPDATE consultation_slots SET is_booked = $1 WHERE id = $2 RETURNING *',
-      [booked, id]
+      `UPDATE consultation_slots SET slot_state = $1::slot_state WHERE id = $2 RETURNING *`,
+      [newState, id]
     );
     return result.rows[0] || null;
   }
 
   /**
-   * Delete a slot — only if not booked
+   * Delete a slot — only if in 'available' or 'disabled' state (not reserved or booked)
    */
   static async delete(id) {
     const result = await query(
-      'DELETE FROM consultation_slots WHERE id = $1 AND is_booked = FALSE RETURNING id',
+      "DELETE FROM consultation_slots WHERE id = $1 AND slot_state NOT IN ('reserved', 'booked') RETURNING id",
       [id]
     );
     return result.rows[0] || null;

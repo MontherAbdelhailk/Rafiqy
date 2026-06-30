@@ -20,12 +20,12 @@ async function seedAllSlots() {
 
     // 2. Delete existing unbooked slots to avoid duplicates
     console.log('Cleaning up existing unbooked slots...');
-    const delRes = await query('DELETE FROM consultation_slots WHERE is_booked = FALSE');
+    const delRes = await query("DELETE FROM consultation_slots WHERE slot_state NOT IN ('reserved', 'booked')");
     console.log(`Deleted ${delRes.rowCount} unbooked slots.`);
 
     // 3. Fetch all booked slot start times to prevent generating overlapping available slots
     console.log('Fetching existing booked slots...');
-    const bookedRes = await query('SELECT start_time FROM consultation_slots WHERE is_booked = TRUE');
+    const bookedRes = await query("SELECT start_time FROM consultation_slots WHERE slot_state IN ('reserved', 'booked')");
     const bookedStartTimes = new Set(bookedRes.rows.map(r => new Date(r.start_time).toISOString()));
     console.log(`Found ${bookedStartTimes.size} existing booked slots.`);
 
@@ -93,7 +93,7 @@ async function seedAllSlots() {
 
       for (const slot of batch) {
         placeholders.push(
-          `($${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, TRUE, FALSE)`
+          `($${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, $${paramIdx++}, 'available'::slot_state)`
         );
         values.push(
           slot.startTime,
@@ -107,7 +107,7 @@ async function seedAllSlots() {
 
       const sql = `
         INSERT INTO consultation_slots 
-          (start_time, end_time, duration_mins, price, notes, created_by, is_available, is_booked)
+          (start_time, end_time, duration_mins, price, notes, created_by, slot_state)
         VALUES ${placeholders.join(', ')}
       `;
 

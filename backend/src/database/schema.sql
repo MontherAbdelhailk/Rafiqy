@@ -50,6 +50,20 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
+-- user_role: enforces that only 'user' and 'admin' are valid roles (3NF: no free-text constraint)
+DO $$ BEGIN
+  CREATE TYPE user_role AS ENUM ('user', 'admin');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+-- slot_state: single ENUM replacing the redundant (is_available, is_booked) boolean pair
+DO $$ BEGIN
+  CREATE TYPE slot_state AS ENUM ('available', 'reserved', 'booked', 'disabled');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
 -- ============================================================
 -- TABLE: users
 -- ============================================================
@@ -71,7 +85,7 @@ CREATE TABLE users (
   phone_number    VARCHAR(20),
   children_count  INTEGER DEFAULT 0,
   bio             TEXT DEFAULT 'Parenting Enthusiast',
-  role            VARCHAR(20)   NOT NULL DEFAULT 'user',
+  role            user_role     NOT NULL DEFAULT 'user',   -- 3NF: ENUM enforces valid values
 
   last_login_at   TIMESTAMPTZ,
   created_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
@@ -108,6 +122,32 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER users_updated_at_trigger
   BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ─── sync_full_name trigger (3NF: full_name is derived from first_name + last_name) ──
+-- Ensures full_name is never stale; no manual update needed in application code.
+CREATE OR REPLACE FUNCTION sync_full_name()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (NEW.first_name IS DISTINCT FROM OLD.first_name)
+  OR (NEW.last_name  IS DISTINCT FROM OLD.last_name)
+  THEN
+    NEW.full_name = TRIM(
+      COALESCE(NEW.first_name, '') ||
+      CASE
+        WHEN NEW.first_name IS NOT NULL AND NEW.last_name IS NOT NULL
+          AND NEW.last_name <> '' THEN ' '
+        ELSE ''
+      END ||
+      COALESCE(NEW.last_name, '')
+    );
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER users_sync_full_name
+  BEFORE INSERT OR UPDATE ON users
+  FOR EACH ROW EXECUTE FUNCTION sync_full_name();
 
 -- ============================================================
 -- TABLE: refresh_tokens
@@ -480,8 +520,10 @@ CREATE TABLE consultation_slots (
   end_time        TIMESTAMPTZ   NOT NULL,
   duration_mins   INTEGER       NOT NULL DEFAULT 45,
   price           DECIMAL(10,2) NOT NULL DEFAULT 750.00,
-  is_available    BOOLEAN       NOT NULL DEFAULT TRUE,
-  is_booked       BOOLEAN       NOT NULL DEFAULT FALSE,
+  -- 3NF: single slot_state ENUM replaces redundant (is_available, is_booked) boolean pair.
+  -- State transitions: available → reserved (pending payment) → booked (confirmed)
+  --                    available → disabled (admin closed)
+  slot_state      slot_state    NOT NULL DEFAULT 'available',
   notes           TEXT,
   created_by      UUID          NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   created_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
@@ -492,7 +534,7 @@ CREATE TABLE consultation_slots (
 );
 
 CREATE INDEX consultation_slots_start_time_idx ON consultation_slots (start_time);
-CREATE INDEX consultation_slots_available_idx  ON consultation_slots (is_available, is_booked);
+CREATE INDEX consultation_slots_state_idx      ON consultation_slots (slot_state);
 
 CREATE TRIGGER consultation_slots_updated_at
   BEFORE UPDATE ON consultation_slots
@@ -564,6 +606,25 @@ CREATE TRIGGER payments_updated_at
   BEFORE UPDATE ON payments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- 3NF: payments.user_id must always match the parent booking's user_id (transitive dependency guard)
+CREATE OR REPLACE FUNCTION enforce_payment_user_consistency()
+RETURNS TRIGGER AS $$
+DECLARE
+  expected_user_id UUID;
+BEGIN
+  SELECT user_id INTO expected_user_id FROM bookings WHERE id = NEW.booking_id;
+  IF expected_user_id IS DISTINCT FROM NEW.user_id THEN
+    RAISE EXCEPTION 'payments.user_id (%) != bookings.user_id (%) for booking %',
+      NEW.user_id, expected_user_id, NEW.booking_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER payments_user_consistency
+  BEFORE INSERT OR UPDATE ON payments
+  FOR EACH ROW EXECUTE FUNCTION enforce_payment_user_consistency();
+
 -- ============================================================
 -- TABLE: sessions
 -- Video session info generated after confirmed payment
@@ -591,7 +652,38 @@ CREATE UNIQUE INDEX sessions_booking_id_uidx  ON sessions (booking_id);
 CREATE UNIQUE INDEX sessions_jitsi_room_uidx  ON sessions (jitsi_room_name);
 CREATE INDEX        sessions_user_id_idx      ON sessions (user_id);
 CREATE INDEX        sessions_status_idx       ON sessions (status);
+CREATE INDEX        sessions_user_status_idx  ON sessions (user_id, status);
 
 CREATE TRIGGER sessions_updated_at
   BEFORE UPDATE ON sessions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- 3NF: sessions.user_id must always match the parent booking's user_id
+CREATE OR REPLACE FUNCTION enforce_session_user_consistency()
+RETURNS TRIGGER AS $$
+DECLARE
+  expected_user_id UUID;
+BEGIN
+  SELECT user_id INTO expected_user_id FROM bookings WHERE id = NEW.booking_id;
+  IF expected_user_id IS DISTINCT FROM NEW.user_id THEN
+    RAISE EXCEPTION 'sessions.user_id (%) != bookings.user_id (%) for booking %',
+      NEW.user_id, expected_user_id, NEW.booking_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sessions_user_consistency
+  BEFORE INSERT OR UPDATE ON sessions
+  FOR EACH ROW EXECUTE FUNCTION enforce_session_user_consistency();
+
+-- ─── Additional performance indexes (3NF / query optimization) ────────────────
+CREATE INDEX IF NOT EXISTS posts_user_id_idx          ON posts (user_id);
+CREATE INDEX IF NOT EXISTS reels_user_id_idx          ON reels (user_id);
+CREATE INDEX IF NOT EXISTS videos_category_id_idx     ON videos (category_id);
+CREATE INDEX IF NOT EXISTS videos_subcategory_id_idx  ON videos (subcategory_id);
+CREATE INDEX IF NOT EXISTS videos_tags_gin_idx        ON videos USING GIN (tags);
+CREATE INDEX IF NOT EXISTS admin_chat_conversation_idx
+  ON admin_chat_messages (sender_id, receiver_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS fcm_tokens_created_at_idx  ON user_fcm_tokens (created_at DESC);
+CREATE INDEX IF NOT EXISTS bookings_user_status_idx   ON bookings (user_id, status);

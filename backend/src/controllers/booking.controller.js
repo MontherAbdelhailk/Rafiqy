@@ -23,8 +23,14 @@ const createBooking = async (req, res, next) => {
     // Check slot exists and is available
     const slot = await SlotModel.findById(slotId);
     if (!slot) return next(new AppError('Slot not found', 404, 'SLOT_NOT_FOUND'));
-    if (!slot.is_available) return next(new AppError('This slot is not available', 400, 'SLOT_UNAVAILABLE'));
-    if (slot.is_booked) return next(new AppError('This slot has already been booked', 400, 'SLOT_ALREADY_BOOKED'));
+
+    // 3NF: Check slot_state ENUM instead of dropped boolean columns
+    if (slot.slot_state === 'disabled') {
+      return next(new AppError('This slot is not available', 400, 'SLOT_UNAVAILABLE'));
+    }
+    if (slot.slot_state === 'reserved' || slot.slot_state === 'booked') {
+      return next(new AppError('This slot has already been booked', 400, 'SLOT_ALREADY_BOOKED'));
+    }
 
     // Create booking (transactional — locks slot)
     const booking = await BookingModel.create({

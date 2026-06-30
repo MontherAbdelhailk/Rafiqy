@@ -77,8 +77,8 @@ async function seedSlots() {
     console.log('Inserting slots...');
     for (const slot of slotsToCreate) {
       await query(
-        `INSERT INTO consultation_slots (start_time, end_time, duration_mins, price, notes, created_by, is_available, is_booked)
-         VALUES ($1, $2, $3, $4, $5, $6, TRUE, FALSE)`,
+        `INSERT INTO consultation_slots (start_time, end_time, duration_mins, price, notes, created_by, slot_state)
+         VALUES ($1, $2, $3, $4, $5, $6, 'available'::slot_state)`,
         [
           slot.startTime.toISOString(),
           slot.endTime.toISOString(),

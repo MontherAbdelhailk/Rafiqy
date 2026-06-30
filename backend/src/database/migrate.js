@@ -35,10 +35,18 @@ async function migrate() {
     await client.query('COMMIT');
 
     logger.info('✅ Migration completed successfully!');
-    logger.info('   Tables created: users, refresh_tokens');
-    logger.info('   Indexes created: username, email, status, created_at, token_hash');
-    logger.info('   Triggers created: users_updated_at_trigger');
-    logger.info('   Views created: active_users');
+    logger.info('   Tables: users, refresh_tokens, posts, post_loves, comments, comment_likes,');
+    logger.info('           comment_replies, reels, reel_loves, reel_comments, reel_comment_likes,');
+    logger.info('           reel_comment_replies, video_categories, video_subcategories, videos,');
+    logger.info('           video_likes, video_views, admin_chat_messages, user_fcm_tokens,');
+    logger.info('           consultation_slots, bookings, payments, sessions');
+    logger.info('   ENUMs: user_status, marital_status, user_role, slot_state, booking_status,');
+    logger.info('          payment_status, session_status');
+    logger.info('   Triggers: users_updated_at_trigger, users_sync_full_name,');
+    logger.info('             consultation_slots_updated_at, bookings_updated_at,');
+    logger.info('             payments_updated_at, payments_user_consistency,');
+    logger.info('             sessions_updated_at, sessions_user_consistency');
+    logger.info('   Views: active_users');
   } catch (error) {
     await client.query('ROLLBACK');
     logger.error('❌ Migration failed:', error.message);

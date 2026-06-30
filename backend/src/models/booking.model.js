@@ -12,8 +12,9 @@ class BookingModel {
       await client.query('BEGIN');
 
       // Lock the slot to prevent double booking
+      // 3NF: use slot_state ENUM instead of dual boolean flags
       const slotCheck = await client.query(
-        'SELECT * FROM consultation_slots WHERE id = $1 AND is_available = TRUE AND is_booked = FALSE FOR UPDATE',
+        'SELECT * FROM consultation_slots WHERE id = $1 AND slot_state = \'available\' FOR UPDATE',
         [slotId]
       );
 
@@ -32,9 +33,9 @@ class BookingModel {
         [userId, slotId, amount || slot.price, notes || null]
       );
 
-      // Mark slot as booked (reserved but not yet confirmed)
+      // Mark slot as reserved (pending payment)
       await client.query(
-        'UPDATE consultation_slots SET is_booked = TRUE WHERE id = $1',
+        "UPDATE consultation_slots SET slot_state = 'reserved' WHERE id = $1",
         [slotId]
       );
 
@@ -185,12 +186,10 @@ class BookingModel {
 
       const booking = bookingResult.rows[0];
 
-      // Permanently lock the slot: is_available = FALSE prevents any future
-      // booking attempt or admin re-opening of this slot while it is confirmed.
+      // Permanently lock the slot: slot_state = 'booked' prevents any future
+      // booking attempt or admin re-opening while confirmed.
       await client.query(
-        `UPDATE consultation_slots
-         SET is_available = FALSE, is_booked = TRUE
-         WHERE id = $1`,
+        "UPDATE consultation_slots SET slot_state = 'booked' WHERE id = $1",
         [booking.slot_id]
       );
 
@@ -226,16 +225,11 @@ class BookingModel {
 
       const booking = bookingResult.rows[0];
 
-      // Release the slot back to fully available.
-      // We must reset BOTH flags:
-      //   is_booked    = FALSE — removes the pending/confirmed lock
-      //   is_available = TRUE  — restores visibility in getAvailableSlots()
-      //
-      // Resetting only is_booked (previous behaviour) left the slot invisible
-      // whenever confirm() had already set is_available = FALSE.
+      // Release the slot back to available:
+      // Reset slot_state to 'available' so it can be booked again.
       if (releasesSlot) {
         await client.query(
-          'UPDATE consultation_slots SET is_booked = FALSE, is_available = TRUE WHERE id = $1',
+          "UPDATE consultation_slots SET slot_state = 'available' WHERE id = $1",
           [booking.slot_id]
         );
       }
@@ -283,11 +277,9 @@ class BookingModel {
 
       const booking = fetchResult.rows[0];
 
-      // Release the slot back to the available pool
+      // Release the slot back to the available pool (slot_state → 'available')
       await client.query(
-        `UPDATE consultation_slots
-         SET is_booked = FALSE, is_available = TRUE
-         WHERE id = $1`,
+        "UPDATE consultation_slots SET slot_state = 'available' WHERE id = $1",
         [booking.slot_id]
       );
 
