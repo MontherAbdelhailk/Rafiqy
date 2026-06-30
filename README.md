@@ -1,5 +1,12 @@
+
 # rafiq
 
+# Admin Account
+Username: Rafiqy
+Password: Admin@123456
+# Test User Account
+Username: testuser
+Password: Test@123456
 A new Flutter project.
 
 ## Getting Started
