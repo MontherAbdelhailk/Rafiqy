@@ -1,0 +1,188 @@
+name: rafiq
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.0
+  lottie: ^3.0.0
+  get_it: ^7.7.0
+  flutter_bloc: ^8.1.6
+  video_player: ^2.8.6
+  shared_preferences: ^2.3.2
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.6
+  flutter_screenutil: ^5.9.3
+  go_router: ^14.6.2
+  flutter_svg: ^2.0.10+1
+  flutter_native_splash: ^2.4.0
+  image_picker: ^1.0.7
+  dio: ^5.4.1 
+  pretty_dio_logger: ^1.3.1 
+  table_calendar: ^3.2.0
+  firebase_core: ^3.4.0
+  firebase_messaging: ^15.1.0
+  flutter_local_notifications: ^18.0.1
+  cloud_firestore: ^5.4.0
+  path_provider: ^2.1.3
+  open_filex: ^4.5.0
+  universal_html: ^2.2.4
+  share_plus: ^13.1.0
+  socket_io_client: ^3.1.2
+  cached_network_image: ^3.4.1
+  webview_flutter: ^4.10.0
+  jitsi_meet_flutter_sdk: ^10.2.0
+  intl: ^0.20.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^3.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  fonts:
+    - family: Cairo  # الاسم اللي هتستخدميه في الكود
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 700
+
+    - family: MerriweatherSans
+      fonts:
+        - asset: assets/fonts/MerriweatherSans-Regular.ttf
+        - asset: assets/fonts/MerriweatherSans-Bold.ttf
+          weight: 700
+
+    - family: Lexend
+      fonts:
+        - asset: assets/fonts/Lexend-Regular.ttf
+        - asset: assets/fonts/Lexend-ExtraBold.ttf
+        - asset: assets/fonts/Lexend-Bold.ttf
+          weight: 700
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_24pt-Regular.ttf
+          weight: 400  
+        - asset: assets/fonts/Inter_18pt-Bold.ttf
+          weight: 700  
+        - asset: assets/fonts/Inter_18pt-BoldItalic.ttf
+          weight: 700
+          style: italic 
+        - asset: assets/fonts/Inter_18pt-ExtraBold.ttf
+          weight: 800        
+      
+      
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/animation/new_annimation.json
+    - assets/images/welcome_picture.svg
+    - assets/images/google.svg
+    - assets/images/Vector.svg
+    - assets/images/rafig_logo.svg
+    - assets/images/Background+Border.svg
+    - assets/images/Stronger_Families.svg
+    - assets/images/unsplash_qLgQBDdJj20.svg
+    - assets/images/menucafe.png
+    - assets/images/family.jfif
+    - assets/images/family_pic.png
+    - assets/images/mother_daughter.png
+    - assets/images/sons.png
+    - assets/images/relation.png
+    - assets/images/friend-comment.png
+    - assets/images/0to3.png
+    - assets/images/3to6.png
+    - assets/images/6to12.png
+    - assets/images/12to15.png
+    - assets/images/15to18.png
+    - assets/images/18to21.png
+    - assets/images/solar--heart-linear.svg
+    - assets/images/solar--chat-round-line-duotone.svg
+    - assets/images/solar--plain-outline.svg
+    - assets/images/home.svg
+    - assets/images/video.svg
+    - assets/images/chatbot.svg
+    - assets/images/reel.svg
+    - assets/images/profile.svg
+    
+    
+        # - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  color: "#FFFFFF" 
+  image: assets/images/splash-png.png 
+  android_12:
+    image: assets/images/splash-png.png 
+    color: "#FFFFFF"
+  fullscreen: true  
