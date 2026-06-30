@@ -1,0 +1,33 @@
+# ============================================================
+# .dockerignore – ملفات متجاهلة أثناء بناء Docker image
+# ============================================================
+
+# Node dependencies (هتتثبت داخل الـ container)
+node_modules/
+npm-debug.log*
+
+# Environment files (بتتحط يدوياً)
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Development tools
+.git/
+.gitignore
+README*.md
+
+# Test & coverage
+coverage/
+test/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+out/
