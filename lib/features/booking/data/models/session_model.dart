@@ -20,6 +20,9 @@ class SessionModel extends SessionEntity {
     super.durationMins,
     super.bookingStatus,
     super.amount,
+    super.confirmedAt,
+    super.bookingCreatedAt,
+    super.effectiveStatus,
     super.userFullName,
     super.username,
     super.userEmail,
@@ -42,6 +45,7 @@ class SessionModel extends SessionEntity {
       jitsiRoomName: roomName,
       jitsiUrl: jitsiUrl,
       status: json['status'] as String? ?? 'scheduled',
+      effectiveStatus: json['effective_status'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String).toLocal()
           : DateTime.now(),
@@ -54,6 +58,8 @@ class SessionModel extends SessionEntity {
       durationMins: (json['duration_mins'] as num?)?.toInt(),
       bookingStatus: json['booking_status'] as String?,
       amount: json['amount'] != null ? double.tryParse(json['amount'].toString()) : null,
+      confirmedAt: json['confirmed_at'] != null ? DateTime.parse(json['confirmed_at'] as String).toLocal() : null,
+      bookingCreatedAt: json['booking_created_at'] != null ? DateTime.parse(json['booking_created_at'] as String).toLocal() : null,
       userFullName: json['user_full_name'] as String?,
       username: json['username'] as String?,
       userEmail: json['user_email'] as String?,

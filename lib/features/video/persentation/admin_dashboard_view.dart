@@ -38,7 +38,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> with SingleTick
       "id": "1",
       "userName": "Hassan Ibrahim",
       "postTitle": "Understanding child emotions",
-      "text": "Great insights Dr. Yehia! This really helped with my 5-year-old child.",
+      "text": "Great insights Rafiqy! This really helped with my 5-year-old child.",
     },
     {
       "id": "2",
@@ -695,7 +695,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> with SingleTick
         itemCount: _sessions.length,
         itemBuilder: (context, index) {
           final session = _sessions[index];
-          final String status = session["status"];
+          final String status = session["effective_status"] ?? session["status"] ?? 'scheduled';
           final startTime = DateTime.parse(session['start_time']).toLocal();
           final endTime = DateTime.parse(session['end_time']).toLocal();
           final bookingCreatedAt = session['booking_created_at'] != null 

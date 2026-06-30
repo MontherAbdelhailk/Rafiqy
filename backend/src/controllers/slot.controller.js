@@ -75,8 +75,8 @@ const createSlot = async (req, res, next) => {
     const slot = await SlotModel.create({
       startTime: start.toISOString(),
       endTime: end.toISOString(),
-      durationMins: durationMins || 60,
-      price: price || 50.00,
+      durationMins: durationMins || 45,
+      price: price || 750.00,
       notes,
       createdBy: req.user.id,
     });

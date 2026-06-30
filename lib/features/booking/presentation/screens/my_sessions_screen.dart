@@ -198,6 +198,10 @@ class _MySessionsScreenState extends State<MySessionsScreen> with SingleTickerPr
     final dateString = start != null ? DateFormat('EEEE, MMMM d, yyyy').format(start) : 'Scheduled Date';
     final canJoin = session.canJoinNow;
 
+    // Booking date: prefer confirmedAt, fall back to bookingCreatedAt, then createdAt
+    final bookingDate = session.confirmedAt ?? session.bookingCreatedAt ?? session.createdAt;
+    final bookingDateString = DateFormat('MMMM d, yyyy').format(bookingDate);
+
     Color badgeColor;
     String badgeText;
 
@@ -235,13 +239,15 @@ class _MySessionsScreenState extends State<MySessionsScreen> with SingleTickerPr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row with Date & Badge
+            // ── Row: Date & Status Badge ─────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  dateString,
-                  style: AppTextStyles.bold16cairo.copyWith(color: AppColors.darkblack),
+                Expanded(
+                  child: Text(
+                    dateString,
+                    style: AppTextStyles.bold16cairo.copyWith(color: AppColors.darkblack),
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
@@ -258,7 +264,7 @@ class _MySessionsScreenState extends State<MySessionsScreen> with SingleTickerPr
             ),
             SizedBox(height: 12.h),
 
-            // Time & Duration
+            // ── Time & Duration ──────────────────────────────────────────
             Row(
               children: [
                 Icon(Icons.access_time, size: 18.sp, color: AppColors.grey1),
@@ -277,6 +283,39 @@ class _MySessionsScreenState extends State<MySessionsScreen> with SingleTickerPr
               ],
             ),
 
+            // ── Past-only extra details ──────────────────────────────────
+            if (isPast) ...[
+              SizedBox(height: 12.h),
+              const Divider(height: 1),
+              SizedBox(height: 12.h),
+
+              // Doctor Name
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 18.sp, color: AppColors.primaryNormal),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Rafiqy',
+                    style: AppTextStyles.bold14cairo.copyWith(color: AppColors.darkblack),
+                  ),
+                ],
+              ),
+              SizedBox(height: 8.h),
+
+              // Booking Date
+              Row(
+                children: [
+                  Icon(Icons.calendar_month_outlined, size: 18.sp, color: AppColors.primaryNormal),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Booked on $bookingDateString',
+                    style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey8),
+                  ),
+                ],
+              ),
+            ],
+
+            // ── Upcoming-only: Join button ───────────────────────────────
             if (!isPast) ...[
               const Divider(height: 32),
               Row(

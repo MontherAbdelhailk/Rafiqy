@@ -14,8 +14,8 @@ const pool = new Pool({
 async function run() {
   try {
     console.log('Connecting to database...');
-    const res = await pool.query('UPDATE consultation_slots SET price = 50.00;');
-    console.log(`Successfully updated ${res.rowCount} slots to 50.00 EGP.`);
+    const res = await pool.query("UPDATE consultation_slots SET price = 750.00, duration_mins = 45, end_time = start_time + INTERVAL '45 minutes';");
+    console.log(`Successfully updated ${res.rowCount} slots to 750.00 EGP and 45 mins.`);
   } catch (err) {
     console.error('Error running update:', err);
   } finally {

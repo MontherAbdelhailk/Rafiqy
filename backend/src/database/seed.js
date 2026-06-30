@@ -28,7 +28,7 @@ async function seed() {
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 12;
 
     const users = [
-      { //
+      { // 
         full_name: 'Rafiqy',
         first_name: 'Rafiqy',
         last_name: '',
@@ -39,7 +39,7 @@ async function seed() {
         phone_number: '+201090895795',
         profile_picture: '/uploads/admin_logo.svg',
       },
-      {//2223000000000007
+      {//2223000000000007    my consultation session
         full_name: 'Test User',
         first_name: 'Test',
         last_name: 'User',
@@ -51,7 +51,7 @@ async function seed() {
         profile_picture: '/uploads/default_user.png',
       },
     ];
-//
+// Past Session
     await client.query('BEGIN');
 
     const createdUsers = {};

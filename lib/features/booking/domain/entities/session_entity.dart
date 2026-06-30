@@ -19,6 +19,10 @@ class SessionEntity {
   final int? durationMins;
   final String? bookingStatus;
   final double? amount;
+  final DateTime? confirmedAt;
+  final DateTime? bookingCreatedAt;
+  // Server-computed: expired scheduled/active sessions are returned as 'completed'
+  final String? effectiveStatus;
 
   // Joined from user
   final String? userFullName;
@@ -49,6 +53,9 @@ class SessionEntity {
     this.durationMins,
     this.bookingStatus,
     this.amount,
+    this.confirmedAt,
+    this.bookingCreatedAt,
+    this.effectiveStatus,
     this.userFullName,
     this.username,
     this.userEmail,
@@ -59,10 +66,10 @@ class SessionEntity {
     this.paymobTransactionId,
   });
 
-  bool get isScheduled => status == 'scheduled';
-  bool get isActive => status == 'active';
-  bool get isCompleted => status == 'completed';
-  bool get isCancelled => status == 'cancelled';
+  bool get isScheduled => (effectiveStatus ?? status) == 'scheduled';
+  bool get isActive    => (effectiveStatus ?? status) == 'active';
+  bool get isCompleted => (effectiveStatus ?? status) == 'completed';
+  bool get isCancelled => (effectiveStatus ?? status) == 'cancelled';
 
   bool get canJoinNow {
     if (isCancelled || isCompleted) return false;

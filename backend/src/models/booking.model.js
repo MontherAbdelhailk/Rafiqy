@@ -226,10 +226,16 @@ class BookingModel {
 
       const booking = bookingResult.rows[0];
 
-      // Release the slot back to available
+      // Release the slot back to fully available.
+      // We must reset BOTH flags:
+      //   is_booked    = FALSE — removes the pending/confirmed lock
+      //   is_available = TRUE  — restores visibility in getAvailableSlots()
+      //
+      // Resetting only is_booked (previous behaviour) left the slot invisible
+      // whenever confirm() had already set is_available = FALSE.
       if (releasesSlot) {
         await client.query(
-          'UPDATE consultation_slots SET is_booked = FALSE WHERE id = $1',
+          'UPDATE consultation_slots SET is_booked = FALSE, is_available = TRUE WHERE id = $1',
           [booking.slot_id]
         );
       }

@@ -85,11 +85,29 @@ class SessionModel {
     params.push(limit, offset);
     const result = await query(
       `SELECT
-        s.id, s.jitsi_room_name, s.status, s.started_at, s.ended_at, s.created_at,
-        b.id as booking_id, b.status as booking_status, b.amount,
+        s.id,
+        s.user_id,
+        s.jitsi_room_name,
+        s.status,
+        -- effective_status: treat expired scheduled/active sessions as 'completed'
+        -- so the Flutter client-side filter always shows them in Past Sessions
+        -- even when the admin has not manually marked them completed.
+        CASE
+          WHEN s.status IN ('completed', 'cancelled') THEN s.status
+          WHEN cs.end_time < NOW()                    THEN 'completed'
+          ELSE s.status
+        END AS effective_status,
+        s.started_at, s.ended_at,
+        s.admin_joined_at, s.user_joined_at,
+        s.created_at,
+        b.id               AS booking_id,
+        b.status           AS booking_status,
+        b.amount,
+        b.confirmed_at,
+        b.created_at       AS booking_created_at,
         cs.start_time, cs.end_time, cs.duration_mins
        FROM sessions s
-       JOIN bookings b ON s.booking_id = b.id
+       JOIN bookings b  ON s.booking_id = b.id
        JOIN consultation_slots cs ON b.slot_id = cs.id
        WHERE s.user_id = $1 ${statusClause}
        ORDER BY cs.start_time DESC
@@ -107,9 +125,16 @@ class SessionModel {
     const params = [];
     const conditions = [];
 
+    // Filter using computed effective_status instead of raw s.status
     if (status) {
       params.push(status);
-      conditions.push(`s.status = $${params.length}`);
+      conditions.push(`(
+        CASE
+          WHEN s.status IN ('completed', 'cancelled') THEN s.status
+          WHEN cs.end_time < NOW()                    THEN 'completed'
+          ELSE s.status
+        END
+      ) = $${params.length}`);
     }
 
     if (search) {
@@ -118,12 +143,23 @@ class SessionModel {
     }
 
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const orderDir = (status === 'scheduled' || status === 'active') ? 'ASC' : 'DESC';
 
     params.push(limit, offset);
     const result = await query(
       `SELECT
-        s.id, s.jitsi_room_name, s.status, s.started_at, s.ended_at, s.created_at,
+        s.id,
+        s.user_id,
+        s.jitsi_room_name,
+        s.status,
+        CASE
+          WHEN s.status IN ('completed', 'cancelled') THEN s.status
+          WHEN cs.end_time < NOW()                    THEN 'completed'
+          ELSE s.status
+        END AS effective_status,
+        s.started_at, s.ended_at,
         s.admin_joined_at, s.user_joined_at,
+        s.created_at,
         b.id as booking_id, b.status as booking_status, b.amount, b.confirmed_at, b.created_at as booking_created_at,
         cs.start_time, cs.end_time, cs.duration_mins,
         u.id as user_id, u.full_name as user_full_name, u.username, u.email as user_email,
@@ -136,7 +172,7 @@ class SessionModel {
        JOIN users u ON s.user_id = u.id
        LEFT JOIN payments p ON p.booking_id = b.id
        ${whereClause}
-       ORDER BY cs.start_time DESC
+       ORDER BY cs.start_time ${orderDir}
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params
     );

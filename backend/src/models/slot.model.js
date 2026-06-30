@@ -49,7 +49,7 @@ class SlotModel {
       `INSERT INTO consultation_slots (start_time, end_time, duration_mins, price, notes, created_by)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [startTime, endTime, durationMins || 60, price || 50.00, notes || null, createdBy]
+      [startTime, endTime, durationMins || 45, price || 750.00, notes || null, createdBy]
     );
     return result.rows[0];
   }

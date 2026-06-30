@@ -23,7 +23,13 @@ async function seedAllSlots() {
     const delRes = await query('DELETE FROM consultation_slots WHERE is_booked = FALSE');
     console.log(`Deleted ${delRes.rowCount} unbooked slots.`);
 
-    // 3. Define timezone offset for Egypt (UTC+3)
+    // 3. Fetch all booked slot start times to prevent generating overlapping available slots
+    console.log('Fetching existing booked slots...');
+    const bookedRes = await query('SELECT start_time FROM consultation_slots WHERE is_booked = TRUE');
+    const bookedStartTimes = new Set(bookedRes.rows.map(r => new Date(r.start_time).toISOString()));
+    console.log(`Found ${bookedStartTimes.size} existing booked slots.`);
+
+    // 4. Define timezone offset for Egypt (UTC+3)
     const EGYPT_OFFSET = 3;
 
     // Define date range: from June 24, 2026 to December 31, 2026
@@ -33,33 +39,40 @@ async function seedAllSlots() {
     let current = new Date(startDate);
     const slots = [];
 
+    // Current time in UTC — used for the today-filter below
+    const nowUTC = new Date();
+
     // Loop through each day
     while (current <= endDate) {
-      // Loop through hours from 9 AM to 11 PM Egypt local time
-      for (let localHour = 9; localHour <= 23; localHour++) {
-        // Create startTime in UTC
-        // Egypt time: UTC+3. So UTC hour = localHour - 3
-        const utcHour = localHour - EGYPT_OFFSET;
+      // Loop through hours from 9 AM to 10 PM Egypt local time.
+      // The last slot STARTS at 22:00 local (10 PM) and ends at 23:00 local (11 PM).
+      // Egypt is UTC+3, so local hour 9 = UTC hour 6, local hour 22 = UTC hour 19.
+      for (let localHour = 9; localHour <= 22; localHour++) {
+        const utcHour = localHour - EGYPT_OFFSET; // Egypt UTC+3
 
+        // Build start time in UTC
         const startTime = new Date(current);
         startTime.setUTCHours(utcHour, 0, 0, 0);
 
-        // End time is 45 minutes later
-        const endTime = new Date(startTime);
-        endTime.setUTCMinutes(45);
+        // Skip if this slot is already booked
+        if (bookedStartTimes.has(startTime.toISOString())) {
+          continue;
+        }
 
-        // If it is today, only insert future slots
-        if (current.toDateString() === new Date().toDateString()) {
-          if (startTime < new Date()) {
-            continue; // Skip past hours for today
-          }
+        // Build end time = start + exactly 45 minutes
+        const endTime = new Date(startTime.getTime() + 45 * 60 * 1000);
+
+        // Skip any slot whose start time is already in the past (pure UTC comparison).
+        // This correctly handles today without relying on toDateString() local/UTC mismatch.
+        if (startTime <= nowUTC) {
+          continue;
         }
 
         slots.push({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           durationMins: 45,
-          price: 550.00,
+          price: 750.00,
           notes: '1-on-1 Consultation Session',
         });
       }

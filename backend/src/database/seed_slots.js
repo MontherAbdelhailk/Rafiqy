@@ -35,36 +35,42 @@ async function seedSlots() {
       return d;
     };
 
+    const tomorrow9 = getFutureDate(1, 9);
+    const tomorrow11 = getFutureDate(1, 11);
+    const tomorrow15 = getFutureDate(1, 15);
+    const dayAfter10 = getFutureDate(2, 10);
+    const dayAfter18 = getFutureDate(2, 18);
+
     const slotsToCreate = [
       {
-        startTime: getFutureDate(1, 9), // Tomorrow 9:00 AM Egypt (6:00 AM UTC)
-        endTime: getFutureDate(1, 10),  // Tomorrow 10:00 AM Egypt
+        startTime: tomorrow9,
+        endTime: new Date(tomorrow9.getTime() + 45 * 60 * 1000),
         notes: 'Child behavioral counseling session',
-        price: 450.00
+        price: 750.00
       },
       {
-        startTime: getFutureDate(1, 11), // Tomorrow 11:00 AM Egypt
-        endTime: getFutureDate(1, 12),  // Tomorrow 12:00 PM Egypt
+        startTime: tomorrow11,
+        endTime: new Date(tomorrow11.getTime() + 45 * 60 * 1000),
         notes: 'Parenting style consultation',
-        price: 450.00
+        price: 750.00
       },
       {
-        startTime: getFutureDate(1, 15), // Tomorrow 3:00 PM Egypt
-        endTime: getFutureDate(1, 16),  // Tomorrow 4:00 PM Egypt
+        startTime: tomorrow15,
+        endTime: new Date(tomorrow15.getTime() + 45 * 60 * 1000),
         notes: 'Speech delay assessment support',
-        price: 550.00
+        price: 750.00
       },
       {
-        startTime: getFutureDate(2, 10), // Day after tomorrow 10:00 AM Egypt
-        endTime: getFutureDate(2, 11),  // Day after tomorrow 11:00 AM Egypt
+        startTime: dayAfter10,
+        endTime: new Date(dayAfter10.getTime() + 45 * 60 * 1000),
         notes: 'General advice session',
-        price: 450.00
+        price: 750.00
       },
       {
-        startTime: getFutureDate(2, 18), // Day after tomorrow 6:00 PM Egypt
-        endTime: getFutureDate(2, 19),  // Day after tomorrow 7:00 PM Egypt
+        startTime: dayAfter18,
+        endTime: new Date(dayAfter18.getTime() + 45 * 60 * 1000),
         notes: 'School readiness guidance',
-        price: 600.00
+        price: 750.00
       }
     ];
 
@@ -76,7 +82,7 @@ async function seedSlots() {
         [
           slot.startTime.toISOString(),
           slot.endTime.toISOString(),
-          60,
+          45,
           slot.price,
           slot.notes,
           adminId

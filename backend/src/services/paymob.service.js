@@ -79,7 +79,7 @@ async function createOrder({ authToken, amountCents, currency = 'EGP', merchantO
       {
         name: 'Consultation Session',
         amount_cents: amountCents,
-        description: 'Online Family Counseling Session with Dr. Yehia',
+        description: 'Online Family Counseling Session with Rafiqy',
         quantity: 1,
       },
     ],

@@ -100,7 +100,7 @@ class _AdminSlotsManagementScreenState extends State<AdminSlotsManagementScreen>
     DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
     TimeOfDay startTime = const TimeOfDay(hour: 9, minute: 0);
     TimeOfDay endTime = const TimeOfDay(hour: 10, minute: 0);
-    final priceController = TextEditingController(text: '50.00');
+    final priceController = TextEditingController(text: '750.00');
     final notesController = TextEditingController();
 
     showDialog(
@@ -160,12 +160,12 @@ class _AdminSlotsManagementScreenState extends State<AdminSlotsManagementScreen>
                                   if (picked != null) {
                                     setDialogState(() {
                                       startTime = picked;
-                                      // Auto-set end time to 1 hour later
-                                      final startHour = startTime.hour;
-                                      final startMin = startTime.minute;
-                                      var endHour = startHour + 1;
-                                      if (endHour >= 24) endHour = 23;
-                                      endTime = TimeOfDay(hour: endHour, minute: startMin);
+                                      // Auto-set end time to 45 minutes later
+                                      final startMinutes = startTime.hour * 60 + startTime.minute;
+                                      final endMinutes = startMinutes + 45;
+                                      final endHour = (endMinutes ~/ 60) % 24;
+                                      final endMin = endMinutes % 60;
+                                      endTime = TimeOfDay(hour: endHour, minute: endMin);
                                     });
                                   }
                                 },

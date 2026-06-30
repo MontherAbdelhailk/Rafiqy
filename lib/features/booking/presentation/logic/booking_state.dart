@@ -51,6 +51,12 @@ class PaymentInitiated extends BookingState {
   });
 }
 
+/// Emitted when Paymob's redirect URL contains success=true.
+/// At this point the payment is approved by Paymob but the booking
+/// confirmation flow (session creation, notifications, etc.) has NOT run yet.
+/// The UI should reveal the "Verify Payment" button only in this state.
+class PaymentApproved extends BookingState {}
+
 class PaymentStatusLoaded extends BookingState {
   final String bookingStatus;
   final Map<String, dynamic>? payment;

@@ -66,7 +66,7 @@ class FloatingConsultationCard extends StatelessWidget {
                 Text('1-on-1 Consultation', style: AppTextStyles.bold20cairo.copyWith(color: AppColors.darkblack)),
                 SizedBox(height: 20.h),
                 Text(
-'Get personalized guidance from Dr. Yehia to\n'
+'Get personalized guidance from Rafiqy to\n'
 'help you navigate your journey with expert\n' 
 'advice tailored to your specific needs..',                      style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey7),
                 ),
@@ -78,7 +78,7 @@ class FloatingConsultationCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildInfo(Icons.access_time, '45 mins'),
-                    _buildInfo(Icons.payments_outlined, '\$550'),
+                    _buildInfo(Icons.payments_outlined, '750 EGP'),
                   ],
                 ),
                 SizedBox(height: 15.h),
