@@ -1,11 +1,10 @@
 'use strict';
 const path = require('path');
-const backendDir = 'c:/Users/engmo/OneDrive/Desktop/Rafeeqy/rafiq/backend';
 
-// Require dotenv from backend's node_modules
-require(path.join(backendDir, 'node_modules/dotenv')).config({ path: path.join(backendDir, '.env') });
+// Require dotenv
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-const { query, pool } = require(path.join(backendDir, 'src/database/connection'));
+const { query, pool } = require('./connection');
 
 async function seedSlots() {
   try {

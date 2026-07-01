@@ -1,11 +1,10 @@
 'use strict';
 const path = require('path');
-const backendDir = 'c:/Users/engmo/OneDrive/Desktop/Rafeeqy/rafiq/backend';
 
 // Require dotenv
-require(path.join(backendDir, 'node_modules/dotenv')).config({ path: path.join(backendDir, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-const { query, pool } = require(path.join(backendDir, 'src/database/connection'));
+const { query, pool } = require('./connection');
 
 async function seedAllSlots() {
   try {
@@ -32,9 +31,11 @@ async function seedAllSlots() {
     // 4. Define timezone offset for Egypt (UTC+3)
     const EGYPT_OFFSET = 3;
 
-    // Define date range: from June 24, 2026 to December 31, 2026
-    const startDate = new Date('2026-06-24T00:00:00Z');
-    const endDate = new Date('2026-12-31T23:59:59Z');
+    // Define date range: from today (at midnight UTC) to 200 days in the future
+    const startDate = new Date();
+    startDate.setUTCHours(0, 0, 0, 0);
+    const endDate = new Date(startDate);
+    endDate.setUTCDate(startDate.getUTCDate() + 200);
 
     let current = new Date(startDate);
     const slots = [];
