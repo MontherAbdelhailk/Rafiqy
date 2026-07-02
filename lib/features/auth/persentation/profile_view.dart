@@ -10,7 +10,6 @@ import 'package:rafiq/core/thieming/app_styles.dart';
 import 'package:rafiq/core/utils/secure_storage.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart';
 import 'package:rafiq/features/profile/domain/entities/profile_entity.dart';
-import 'package:rafiq/features/profile/persentation/edit_profile.dart';
 import 'package:rafiq/features/profile/persentation/logic/profile_cubit.dart';
 import 'package:rafiq/features/profile/persentation/logic/profile_state.dart';
 import 'package:rafiq/core/widgets/app_avatar.dart';
@@ -23,10 +22,9 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // بنعمل تفعيل للـ Cubit وبنطلب الداتا فوراً
       create: (context) => getIt<ProfileCubit>()..getProfile(),
       child: Scaffold(
-        backgroundColor: const Color(0xFFFAFAFA),
+        backgroundColor: AppColors.babypink,
         body: SafeArea(
           child: BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
@@ -82,6 +80,7 @@ class ProfileView extends StatelessWidget {
             _buildInfoCard(user),
             40.verticalSpace,
             CustomButton(
+              borderRadius: 10,
               text: 'Edit Profile',
               onPressed: () async {
                 await context.push('/edit-profile', extra: user);
@@ -89,26 +88,42 @@ class ProfileView extends StatelessWidget {
                   context.read<ProfileCubit>().getProfile();
                 }
               },
-              backgroundColor: AppColors.primaryNormalActive,
+              backgroundColor: AppColors.primaryNormal,
               textColor: Colors.white,
               height: 50.h,
               icon: const Icon(Icons.edit_note, color: Colors.white),
             ),
             12.verticalSpace,
-            CustomButton(
-              text: 'My Consultation Sessions',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MySessionsScreen()),
-                );
-              },
-              backgroundColor: AppColors.primaryNormal,
-              textColor: Colors.white,
-              height: 50.h,
-              icon: const Icon(Icons.video_call_outlined, color: Colors.white),
-            ),
-            12.verticalSpace,
+// 12.verticalSpace,
+// استبدلي الزرار القديم بهذا الـ FutureBuilder:
+FutureBuilder<bool>(
+  future: SecureStorage.isAdmin(),
+  builder: (context, snapshot) {
+    // لو الـ isAdmin رجعت true، مش هنعرض الزرار (لأنه أدمن)
+    // لو رجعت false (مستخدم عادي)، هنعرض الزرار
+    if (snapshot.data == true) {
+      return const SizedBox.shrink(); // لو أدمن، اخفي الزرار
+    }
+    
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: CustomButton(
+        borderRadius: 10,
+        text: 'My Consultation Sessions',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MySessionsScreen()),
+          );
+        },
+        backgroundColor: AppColors.primaryNormal,
+        textColor: Colors.white,
+        height: 50.h,
+        icon: const Icon(Icons.video_call_outlined, color: Colors.white),
+      ),
+    );
+  },
+),            12.verticalSpace,
             FutureBuilder<bool>(
               future: SecureStorage.isAdmin(),
               builder: (context, snapshot) {
@@ -116,6 +131,7 @@ class ProfileView extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 12.h),
                     child: CustomButton(
+                      borderRadius: 10.r,
                       text: 'Admin Panel',
                       onPressed: () {
                         context.push(AppRouter.adminDashboardView);
@@ -132,6 +148,7 @@ class ProfileView extends StatelessWidget {
             ),
             // Logout button (SRS §1.4)
             CustomButton(
+              borderRadius: 10,
               text: 'Logout',
               onPressed: () async {
                 await SecureStorage.clearAll();
@@ -158,12 +175,16 @@ class ProfileView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Profile",
-            style: AppTextStyles.extrabold28cairo.copyWith(color: Colors.black),
+        const   Icon(Icons.arrow_back, color: AppColors.darkblack),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(
+              "Profile",
+              style: AppTextStyles.extrabold28cairo.copyWith(color: Colors.black),
+            ),
           ),
           SvgPicture.asset(
-            'assets/images/rafig_logo.svg',
+            'assets/images/Group 4.svg',
             width: 56.w,
             height: 38.h,
           ),
@@ -172,43 +193,56 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileImage(ProfileEntity user) {
-    return Center(
-      child: SizedBox(
-        width: 140.w,
-        height: 140.h,
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: AppAvatar(
-                imageUrl: user.profilePicture,
-                radius: 65.r,
-                name: user.fullName,
+Widget _buildProfileImage(ProfileEntity user) {
+  return Center(
+    child: SizedBox(
+      width: 140.w,
+      height: 140.h,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: (user.profilePicture == null || user.profilePicture!.isEmpty)
+                ? Container( // هذا هو الـ Icon الجميل بدلاً من الصورة
+                    width: 130.w,
+                    height: 130.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.grey5, // لون خلفية هادئ
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.person_outline,
+                      size: 60.sp,
+                      color: AppColors.primaryNormal,
+                    ),
+                  )
+                : AppAvatar(
+                    imageUrl: user.profilePicture,
+                    radius: 65.r,
+                    name: user.fullName,
+                  ),
+          ),
+          Positioned(
+            bottom: 10.h,
+            right: 10.w,
+            child: Container(
+              padding: EdgeInsets.all(4.w),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: CircleAvatar(
+                radius: 18.r,
+                backgroundColor: AppColors.primaryNormal,
+                child: Icon(Icons.edit, color: Colors.white, size: 18.sp),
               ),
             ),
-            Positioned(
-              bottom: 10.h,
-              right: 10.w,
-              child: Container(
-                padding: EdgeInsets.all(4.w),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: CircleAvatar(
-                  radius: 18.r,
-                  backgroundColor: AppColors.primaryNormal,
-                  child: Icon(Icons.edit, color: Colors.white, size: 18.sp),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   Widget _buildInfoCard(ProfileEntity user) {
     return Container(
       padding: EdgeInsets.all(16.w),
@@ -225,18 +259,38 @@ class ProfileView extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildProfileRow("First Name", user.firstName),
-          const Divider(height: 30),
+                              Padding(
+            padding: const EdgeInsets.only(top:9,bottom: 9),
+
+       child:   _buildProfileRow("First Name", user.firstName),
+                              ),
+          const Divider(height: 10),
+                              Padding(
+            padding: const EdgeInsets.only(top: 9,bottom: 9),
+child:
           _buildProfileRow("Last Name", user.lastName),
-          const Divider(height: 30),
-          _buildProfileRow("Phone Number", user.phone),
-          const Divider(height: 30),
-          _buildProfileRow("Age", user.age.toString()),
-          const Divider(height: 30),
-          _buildProfileRow("Status", user.status),
+                              ),
+          const Divider(height: 10),
+                              Padding(
+            padding: const EdgeInsets.only(top: 9,bottom: 9),
+
+     child:      _buildProfileRow("Phone Number", user.phone),
+                              ),
+          const Divider(height: 10),
+                              Padding(
+            padding: const EdgeInsets.only(top: 9,bottom: 9),
+
+       child:   _buildProfileRow("Age", user.age.toString()),
+                              ),
+          const Divider(height: 10),
+                              Padding(
+            padding: const EdgeInsets.only(top: 9,bottom: 9),
+
+     child:      _buildProfileRow("Status", user.status),
+                              ),
           // Conditional: only show when Married (SRS §2.1)
           if (user.status == 'Married') ...[
-            const Divider(height: 30),
+            const Divider(height: 10),
             _buildProfileRow("Number of Children", user.childrenCount.toString()),
           ],
         ],

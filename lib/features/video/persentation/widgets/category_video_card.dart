@@ -42,15 +42,16 @@ class CategoryVideoCard extends StatelessWidget {
       child: AppGenericCard(
         onTap: onTap,
         height: 270.h,
-        color: Colors.white,
+        color: Colors.transparent,
         borderRadius: 8.r,
-        border: Border.all(color: AppColors.primaryNormal.withOpacity(0.2)),
+        border: Border.all(color: AppColors.lightYellow.withOpacity(0.2)),
         child: Column(
           children: [
             CategoryVideoCardHeader(icon: _getIconData(iconName)),
             CategoryVideoCardContent(
               title: title,
               description: description,
+              backgroundColor: Colors.white,
             ),
           ],
         ),

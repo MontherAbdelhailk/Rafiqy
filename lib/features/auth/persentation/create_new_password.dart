@@ -95,7 +95,7 @@ class _CreateNewPasswordViewState extends State<CreateNewPasswordView> {
                           onPressed: state is ResetPasswordLoading 
                             ? null 
                             : () => _onConfirmPressed(context),
-                          backgroundColor: AppColors.primaryNormalActive,
+                          backgroundColor: AppColors.primaryNormal,
                           textColor: Colors.white,
                           height: 48.h,
                         );

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rafiq/core/utils/secure_storage.dart';
 
 // ── States ──────────────────────────────────────────────────────────────────
@@ -23,35 +25,45 @@ final class SocialLoginError extends SocialLoginState {
 /// google_sign_in / sign_in_with_apple packages are added.
 class SocialLoginCubit extends Cubit<SocialLoginState> {
   SocialLoginCubit() : super(SocialLoginInitial());
+final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  // ── Google Sign-In ─────────────────────────────────────────────────────────
+Future<void> signInWithGoogle() async {
+  emit(SocialLoginLoading());
 
-  Future<void> signInWithGoogle() async {
-    emit(SocialLoginLoading());
-    try {
-      // TODO: Replace stub with real Firebase + GoogleSignIn flow:
-      //
-      // final googleUser = await GoogleSignIn().signIn();
-      // if (googleUser == null) { emit(SocialLoginInitial()); return; }
-      // final googleAuth = await googleUser.authentication;
-      // final credential = GoogleAuthProvider.credential(
-      //   accessToken: googleAuth.accessToken,
-      //   idToken: googleAuth.idToken,
-      // );
-      // final userCredential =
-      //     await FirebaseAuth.instance.signInWithCredential(credential);
-      // final token = await userCredential.user!.getIdToken();
-      // await SecureStorage.saveToken(token!);
-      // await SecureStorage.saveRole('user');
-      // await SecureStorage.saveUserId(userCredential.user!.uid);
-      // await SecureStorage.saveUsername(userCredential.user!.email ?? '');
+  try {
+        await googleSignIn.signOut();
 
-      emit(SocialLoginSuccess());
-    } catch (e) {
-      emit(SocialLoginError('Google sign-in failed: ${e.toString()}'));
+    final GoogleSignInAccount? googleUser =
+        await GoogleSignIn().signIn();
+
+    if (googleUser == null) {
+      emit(SocialLoginInitial());
+      return;
     }
-  }
 
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
+
+    print("UID = ${userCredential.user!.uid}");
+    print("Email = ${userCredential.user!.email}");
+    print("Name = ${userCredential.user!.displayName}");
+print("========== GOOGLE SUCCESS ==========");
+
+    emit(SocialLoginSuccess());
+
+  } catch (e) {
+    print(e);
+    emit(SocialLoginError(e.toString()));
+  }
+}
   // ── Apple Sign-In ──────────────────────────────────────────────────────────
 
   Future<void> signInWithApple() async {

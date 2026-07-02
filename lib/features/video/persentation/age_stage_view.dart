@@ -124,7 +124,7 @@ class AgeStagesView extends StatelessWidget {
             subTitle: 'Recovery & Growth',
           ),
           AgeStageEntity(
-            ageRange: '21–30 YEARS',
+            ageRange: '',
             title: 'Youth (21–30)',
             description:
                 'Educational videos focused on preparing young adults for marriage, responsibility, and family life.',

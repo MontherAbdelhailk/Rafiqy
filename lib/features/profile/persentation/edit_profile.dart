@@ -189,6 +189,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                     40.verticalSpace,
 
                     CustomButton(
+                      height: 50.h,
+                      backgroundColor: AppColors.primaryNormal,
+                      borderRadius: 10.r,
                       text: isLoading ? "Saving..." : "Save Changes",
                       onPressed:
                           isLoading ? null : () => _save(context),
@@ -196,6 +199,9 @@ class _EditProfileViewState extends State<EditProfileView> {
 
                     12.verticalSpace,
                     CustomButton(
+                      borderSide: const BorderSide(color: AppColors.primaryNormalHover),
+                      height: 50.h,
+                      borderRadius: 10.r,
                       text: "Cancel",
                       onPressed: () => Navigator.pop(context),
                       backgroundColor: Colors.white,
@@ -236,7 +242,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     final hasPicture =
         _currentPictureUrl != null && _currentPictureUrl!.isNotEmpty;
     final imageUrl =
-        hasPicture ? "http://10.0.2.2:5000$_currentPictureUrl" : "";
+        hasPicture ? "http://10.238.1.136:5000$_currentPictureUrl" : "";
 
     return Center(
       child: GestureDetector(
@@ -298,12 +304,16 @@ class _EditProfileViewState extends State<EditProfileView> {
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Colors.grey.shade300),
       ),
-      child: DropdownButtonFormField<String>(
+child: DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        isExpanded: true,
         value: value,
-        decoration: const InputDecoration(border: InputBorder.none),
+        icon: const Icon(Icons.arrow_drop_down),
+        
         items:
             items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
         onChanged: onChanged,
+      ),
       ),
     );
   }

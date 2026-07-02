@@ -3,17 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq/core/thieming/app_colors.dart';
 import 'package:rafiq/core/thieming/app_styles.dart';
+import 'package:rafiq/core/utils/secure_storage.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart'; 
-// تأكدي من عمل import الصحيح للمسار الجديد لصفحة الأسئلة
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/assessment_qs.dart'; 
 
 class AssessmentIntroPage extends StatefulWidget {
-  // 🚀 يفضل استلام الـ userId الحقيقي لليوزر الحالي هنا عشان نقضي على الـ Dummy data تماماً
-  final String userId;
 
   const AssessmentIntroPage({
     super.key, 
-    this.userId = "temp_user_123", // قيمة افتراضية لحين ربط الـ AuthCubit بتاعك بالكامل
+    
   });
 
   @override
@@ -21,11 +19,26 @@ class AssessmentIntroPage extends StatefulWidget {
 }
 
 class _AssessmentIntroPageState extends State<AssessmentIntroPage> {
+
+String? _userId;
+
+@override
+void initState() {
+  super.initState();
+  _loadUserId();
+}
+
+Future<void> _loadUserId() async {
+  _userId = await SecureStorage.getUserId();
+
+  setState(() {});
+}
+
+  
   String? _selectedChild;
   
   final List<String> _childrenage = ['1-3', '3-6', '6-9'];
 
-  // 💡 دالة ذكية لتحويل الـ Text Range المختار من الـ Dropdown إلى رقم int حقيقي يفهمه السيرفر
   int _mapAgeRangeToInt(String? range) {
     switch (range) {
       case '1-3': return 3;
@@ -40,7 +53,7 @@ class _AssessmentIntroPageState extends State<AssessmentIntroPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), 
       appBar: AppBar(
-        title: Text('Rafiq', style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack)),
+        title: Text('Rafiqy', style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -67,7 +80,7 @@ class _AssessmentIntroPageState extends State<AssessmentIntroPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
                   child: Image.asset(
-                    'assets/images/0to3.png', 
+                    'assets/images/evaluation.jpg', 
                     height: 240.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -101,10 +114,10 @@ class _AssessmentIntroPageState extends State<AssessmentIntroPage> {
                           SizedBox(height: 10.h),
 
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            padding: EdgeInsets.symmetric(horizontal: 16.w,vertical: 10.h),
                             decoration: BoxDecoration(
                               color: AppColors.ligthgrey,
-                              borderRadius: BorderRadius.circular(12.r),
+                              borderRadius: BorderRadius.circular(9.r),
                               border: Border.all(color: Colors.grey[300]!),
                             ),
                             child: DropdownButtonHideUnderline(
@@ -137,21 +150,31 @@ class _AssessmentIntroPageState extends State<AssessmentIntroPage> {
                         text: 'Start Assessment',
                         height: 50,
                         borderRadius: 12,
-                        onPressed: _selectedChild == null 
-                          ? null 
-                          : () {
-                              // 🚀 هنا تم حل المشكلة وتوصيل الـ Route بالبيانات الديناميكية كاملة
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => AssessmentQuestionnairePage(
-                                    userId: widget.userId, // تمرير الآيدي الحقيقي ديناميكياً
-                                    childAge: _mapAgeRangeToInt(_selectedChild), // تمرير السن الحقيقي كـ int متوافق مع السيرفر
-                                  ),
-                                ),
-                              );
-                            },     
-                        backgroundColor: AppColors.lightYellow,
+                        onPressed: _selectedChild == null
+    ? null
+    : () async {
+        final userId = await SecureStorage.getUserId();
+
+        if (userId == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("User not found")),
+          );
+          return;
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AssessmentQuestionnairePage(
+              userId: userId,
+              childAge: _mapAgeRangeToInt(_selectedChild),
+            ),
+          ),
+        );
+      },     
+
+
+                        backgroundColor: AppColors.primaryNormal,
                       ),
                       
                       SizedBox(height: 15.h),

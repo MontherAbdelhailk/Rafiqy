@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rafiq/core/errors/error_handling.dart';
 import 'package:rafiq/core/networking/api_consumer.dart';
 import 'package:rafiq/core/utils/secure_storage.dart';
@@ -16,7 +17,6 @@ class AuthRepoImpl implements AuthRepo {
 @override
 Future<UserEntity> login(String emailOrUsername, String password) async {
   try {
-    // Node.js backend expects "identifier" and "password" as JSON
     final response = await apiConsumer.post(
       "auth/login",
       data: {
@@ -25,7 +25,6 @@ Future<UserEntity> login(String emailOrUsername, String password) async {
       },
     );
 
-    // Get nested token, user details from response structure: { success: true, data: { accessToken, refreshToken, user: { ... } } }
     final data = response['data'] ?? {};
     final token = data['accessToken'] as String? ?? '';
     final refreshToken = data['refreshToken'] as String? ?? '';
@@ -145,5 +144,17 @@ Future<String> verifyOtp(String phone, String otp) async { // 👈 غيرناه�
     }
   }
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+@override
+Future<UserEntity> signInWithGoogle() async {
+    // 1. خطوات جوجل
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
 
+    final response = await apiConsumer.post('/auth/google', data: {
+      'id_token': googleAuth.idToken,
+    });
+
+    return UserModel.fromJson(response.data);
+  }
 }

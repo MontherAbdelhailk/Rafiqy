@@ -1,8 +1,4 @@
-// features/chatbot_and_assessment/persentation/screens/logic/assess_result_cubit.dart
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dio/dio.dart';
-import 'package:rafiq/features/chatbot_and_assessment/domain/entities/assess_result.dart';
 import 'package:rafiq/features/chatbot_and_assessment/domain/entities/assessment_q.dart';
 import 'package:rafiq/features/chatbot_and_assessment/domain/repos/assessment_repo.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/assess_result_state.dart';
@@ -27,13 +23,16 @@ class AssessmentResultCubit extends Cubit<AssessmentResultState> {
         answeredQuestions: answeredQuestions,
       );
 
+      print("🚀 Success inside loadResults! Main Trait: ${resultData.mainTrait}");
+      print("📊 Scores count: ${resultData.scores.length}");
+
       emit(state.copyWith(
         status: AssessmentResultStatus.loaded, 
         result: resultData,
       ));
       
     } catch (e) {
-      print("Error inside loadResults: $e");
+      print("❌ Error inside loadResults: $e");
       emit(state.copyWith(status: AssessmentResultStatus.error, errorMessage: e.toString()));
     }
   }

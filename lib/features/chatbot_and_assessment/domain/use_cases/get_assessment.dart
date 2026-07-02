@@ -7,7 +7,7 @@ class GetAssessmentQuestions {
 
   GetAssessmentQuestions(this.repository);
 
-  Future<List<AssessmentQuestion>> call() async {
-    return await repository.getQuestions();
+  Future<List<AssessmentQuestion>> call(int childAge) async {
+    return repository.getQuestions(childAge);
   }
 }

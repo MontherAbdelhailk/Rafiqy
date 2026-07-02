@@ -1,21 +1,22 @@
-// features/assessment/presentation/pages/assessment_result_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq/core/di/dependency_injection.dart';
 import 'package:rafiq/core/thieming/app_colors.dart';
 import 'package:rafiq/core/thieming/app_styles.dart';
-import 'package:rafiq/core/utils/secure_storage.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart';
+import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/assessment_intro.dart'; 
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/assess_result_cubit.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/assess_result_state.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/planning_state_cubit.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/parenting_plan_view.dart';
-import 'package:rafiq/features/chatbot_and_assessment/persentation/widgets/assess_charts.dart';
+import 'package:rafiq/features/chatbot_and_assessment/persentation/widgets/assess_charts.dart'; 
 import '../widgets/result_tile.dart';
 
 class AssessmentResultPage extends StatelessWidget {
-  const AssessmentResultPage({super.key});
+  final String userId;
+  
+  const AssessmentResultPage({super.key, required this.userId });
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,6 @@ class AssessmentResultPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center, 
               children: [
-                // 1. النتيجة الرئيسية
                 Text(
                   'Your Child is a ${result.mainTrait}', 
                   textAlign: TextAlign.center, 
@@ -59,10 +59,10 @@ class AssessmentResultPage extends StatelessWidget {
                 ),
                 
                 SizedBox(height: 16.h),
-                // 2. الـ Tiles مأخوذة ديناميكيًا بالكامل بناءً على الحسابات الجديدة
-                ...result.scores.map((s) => ResultTile(
+                
+                ...result.scores.take(4).map((s) => ResultTile(
                   icon: _getIconForTrait(s.name),
-                  title: _translateTraitName(s.name), // دالة مساعدة لعرض الاسم بشكل احترافي
+                  title: _translateTraitName(s.name), 
                   score: s.score,
                   description: s.description,
                 )),
@@ -72,69 +72,50 @@ class AssessmentResultPage extends StatelessWidget {
                   confidence: result.confidenceScore,
                   dimensions: result.dimensionScores,
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 32.h), 
 
-                // Save to Profile button (SRS §5.2)
+                // 1. زرار Done شغال تمام
                 CustomButton(
-                  text: 'Save to Profile',
-                  height: 55.h,
-                  borderRadius: 12.r,
-                  backgroundColor: AppColors.primaryNormalActive,
-                  textColor: Colors.white,
-                  icon: const Icon(Icons.bookmark_add_outlined, color: Colors.white),
-                  onPressed: () async {
-                    final prefs = await SecureStorage.getToken();
-                    // Save result to shared prefs under 'assessment_result' key
-                    final prefInstance = await _saveResult(result.mainTrait);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Result saved to your profile!',
-                            style: AppTextStyles.regular14cairo.copyWith(color: Colors.white),
-                          ),
-                          backgroundColor: AppColors.primaryNormalActive,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                SizedBox(height: 12.h),
-
-                CustomButton(
+                  backgroundColor: AppColors.primaryNormalHover,
                   text: 'Done',
                   height: 55.h,
                   borderRadius: 12.r,
-                  backgroundColor: Colors.transparent,
-                  borderSide: BorderSide(color: AppColors.primaryNormalActive),
-                  textstyle: AppTextStyles.regular16cairo.copyWith(color: AppColors.primaryNormalActive),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (context) => getIt<ParentingPlanCubit>(),
-                          child: const ParentingPlanView(),
+create: (context) =>
+    getIt<ParentingPlanCubit>()..generateAndFetchPlan(userId),
+child: const ParentingPlanView(
+  isFromAssessment: true,
+),                      ),
+                    ),  
+                    );                 
+                  },
+                ),
+                SizedBox(height: 16.h),
+                
+                CustomButton(
+                
+                  backgroundColor: Colors.transparent,
+                  text: 'Retake Assessment',
+                  borderSide: const BorderSide(color: AppColors.primaryNormalActive),
+                  textstyle: AppTextStyles.regular16cairo.copyWith(color: AppColors.primaryNormal),
+                  textColor: AppColors.primaryNormal,
+                  height: 55.h,
+                  borderRadius: 12.r,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AssessmentIntroPage(
                         ),
                       ),
                     );
                   },
                 ),
-                SizedBox(height: 16.h),
-                CustomButton(
-                  backgroundColor: Colors.transparent,
-                  text: 'Retake Assessment',
-                  borderSide: BorderSide(color: AppColors.primaryNormalActive),
-                  textstyle: AppTextStyles.regular16cairo.copyWith(color: AppColors.primaryNormalActive),
-                  height: 55.h,
-                  borderRadius: 12.r,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+              ], 
             ),
           );
         },
@@ -142,16 +123,6 @@ class AssessmentResultPage extends StatelessWidget {
     );
   }
 
-  Future<void> _saveResult(String trait) async {
-    // Persist the assessment result to SharedPreferences
-    // so it can be read by the ProfileCubit later
-    final prefs = await SecureStorage.getToken(); // reuse existing prefs access
-    // Using shared_preferences directly here for the assessment result
-    // In future, this should call an API endpoint to persist server-side
-  }
-
-
-  // 🚀 إصلاح الـ Switch Case ليدعم الكلمات الـ lowercase القادمة من الباكيند
   IconData _getIconForTrait(String traitName) {
     switch (traitName.toLowerCase()) {
       case 'leadership': return Icons.star;
@@ -159,17 +130,28 @@ class AssessmentResultPage extends StatelessWidget {
       case 'the thinker': case 'thinker': return Icons.lightbulb;
       case 'focus': return Icons.psychology; 
       case 'sociability': return Icons.people;
+      case 'empathy': return Icons.favorite;
+      case 'self_control': return Icons.gavel;
+      case 'curiosity': return Icons.search;
+      case 'adaptability': return Icons.cached;
+      case 'sensitivity': return Icons.waves;
       default: return Icons.person;
     }
   }
 
-  // دالة مساعدة لترجمة وعرض المفاتيح الإنجليزية لأسماء عربية جميلة في الـ UI
   String _translateTraitName(String traitName) {
     switch (traitName.toLowerCase()) {
-      case 'focus': return 'التركيز والانتباه';
-      case 'leadership': return 'المهارات القيادية';
-      case 'sociability': return 'الذكاء الاجتماعي';
-      default: return traitName;
+      case 'focus': return 'Focus';
+      case 'leadership': return 'Leadership';
+      case 'sociability': return 'Sociability';
+      case 'empathy': return 'Empathy';
+      case 'self_control': return 'Self-Control';
+      case 'curiosity': return 'Curiosity';
+      case 'adaptability': return 'Adaptability';
+      case 'sensitivity': return 'Sensitivity';
+      default: 
+        if (traitName.isEmpty) return traitName;
+        return traitName[0].toUpperCase() + traitName.substring(1).toLowerCase();
     }
   }
 }

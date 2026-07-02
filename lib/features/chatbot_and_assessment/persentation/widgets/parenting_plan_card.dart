@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rafiq/core/thieming/app_colors.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart';
 import 'package:rafiq/features/chatbot_and_assessment/domain/entities/parenting_plan.dart';
+import 'package:readmore/readmore.dart';
 import '../../../../core/thieming/app_styles.dart';
 import '../../../../core/widgets/app_generic_card.dart';
 
@@ -68,16 +69,28 @@ class ParentingPlanCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
-    return Directionality(
-      textDirection: TextDirection.rtl, // لتنسيق النص العربي من اليمين لليسار صح
-      child: Text(
-        plan.planText,
-        style: AppTextStyles.regular14cairo.copyWith(height: 1.6, color: Colors.black87),
+Widget _buildContent() {
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: ReadMoreText(
+      plan.planText,
+      trimLines: 9,
+      trimMode: TrimMode.Line,
+trimCollapsedText: ' Read more',
+trimExpandedText: ' Show less',
+      style: AppTextStyles.regular14cairo.copyWith(
+        height: 1.6,
+        color: Colors.black87,
       ),
-    );
-  }
-
+      moreStyle: AppTextStyles.regular14cairo.copyWith(
+        color: AppColors.primaryNormalActive,
+      ),
+      lessStyle: AppTextStyles.regular14cairo.copyWith(
+        color: AppColors.primaryNormalActive,
+      ),
+    ),
+  );
+}
 
   Widget _buildActions() {
 

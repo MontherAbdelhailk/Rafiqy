@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq/core/thieming/app_colors.dart';
 
 class CategoryVideoCardHeader extends StatelessWidget {
   final IconData icon;
@@ -12,14 +13,14 @@ class CategoryVideoCardHeader extends StatelessWidget {
       height: 150.h,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F4E8),
+        color: AppColors.lightYellow.withOpacity(0.1),
         borderRadius: BorderRadius.vertical(top: Radius.circular(8.r)),
       ),
       child: Center(
         child: Icon(
           icon, 
           size: 40.sp, 
-          color: const Color(0xFF9DB454),
+          color: AppColors.primaryNormal,
         ),
       ),
     );

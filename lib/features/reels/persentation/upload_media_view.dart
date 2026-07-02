@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart'; // استخدمي GoRouter
 import 'package:rafiq/core/routes/app_routes.dart';
+import 'package:rafiq/core/thieming/app_colors.dart';
+import 'package:rafiq/core/thieming/app_styles.dart';
 
 class UploadMediaView extends StatefulWidget {
   const UploadMediaView({super.key});
@@ -35,19 +37,16 @@ class _UploadMediaViewState extends State<UploadMediaView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: const CloseButton(color: Colors.black),
-        title: const Text("Upload Media", style: TextStyle(color: Colors.black)),
+        leading:const Icon(Icons.arrow_back ,color: AppColors.grey2,),
+ title:  Text("Upload Media", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.grey2)),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: _pickVideo,
             child: Text(
               "Next",
-              style: TextStyle(
-                color: const Color(0xFF96A53A),
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              ),
+     style:AppTextStyles.bold20cairo.copyWith(color: AppColors.primaryNormal)
+
             ),
           ),
         ],
@@ -63,7 +62,7 @@ class _UploadMediaViewState extends State<UploadMediaView> {
             ElevatedButton(
               onPressed: _pickVideo,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF96A53A),
+                backgroundColor: AppColors.primaryNormal,
               ),
               child: const Text("Select Video from Gallery"),
             ),

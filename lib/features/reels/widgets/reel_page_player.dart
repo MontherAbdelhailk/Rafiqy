@@ -58,7 +58,7 @@ class _ReelPagePlayerState extends State<ReelPagePlayer> {
     } else {
       // Local path from backend server
       final cleanPath = videoUrl.startsWith('/') ? videoUrl : '/$videoUrl';
-      final absoluteUrl = 'http://10.0.2.2:5000$cleanPath';
+      final absoluteUrl = 'http://10.238.1.136:5000$cleanPath';
       _controller = VideoPlayerController.networkUrl(Uri.parse(absoluteUrl));
     }
 

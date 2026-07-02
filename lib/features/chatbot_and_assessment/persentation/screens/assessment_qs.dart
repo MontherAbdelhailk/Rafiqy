@@ -12,7 +12,6 @@ import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/assess_result_cubit.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/assess_state.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic/planning_state_cubit.dart';
-import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/parenting_plan_view.dart';
 import 'package:rafiq/features/chatbot_and_assessment/persentation/widgets/assess_option_card.dart';
 
 class AssessmentQuestionnairePage extends StatelessWidget {
@@ -28,7 +27,8 @@ class AssessmentQuestionnairePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<AssessmentCubit>()..loadQuestions(), 
+create: (context) => getIt<AssessmentCubit>()
+  ..loadQuestions(childAge),      
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 56.h,
@@ -59,12 +59,11 @@ class AssessmentQuestionnairePage extends StatelessWidget {
               return const Center(child: Text("No Questions Found"));
             }
 
-            // 🌟 استخدام الـ CustomScrollView لحل الـ Overflow نهائياً وجعل الشاشة Scrollable
             return CustomScrollView(
-              physics: const BouncingScrollPhysics(), // سكرول ناعم ومنعش للمستخدم
+              physics: const BouncingScrollPhysics(), 
               slivers: [
                 SliverFillRemaining(
-                  hasScrollBody: false, // بيسمح للـ Spacer إنه يشتغل لو مفيش سكرول
+                  hasScrollBody: false,
                   child: Padding(
                     padding: EdgeInsets.all(20.w),
                     child: Column(
@@ -82,7 +81,7 @@ class AssessmentQuestionnairePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10.r),
                           minHeight: 10.h,
                           value: state.progress, 
-                          color: AppColors.lightYellow, 
+                          color: AppColors.primaryNormal, 
                           backgroundColor: AppColors.primaryLightActive,
                         ),
                         SizedBox(height: 30.h),
@@ -116,6 +115,7 @@ class AssessmentQuestionnairePage extends StatelessWidget {
                           text: state.isLastQuestion ? 'Finish' : 'Next',
                           height: 50.h,
                           borderRadius: 10.r,
+
                           onPressed: state.currentQuestion!.selectedAnswer != null
                               ? () async {
                                   if (state.isLastQuestion) {
@@ -147,7 +147,7 @@ class AssessmentQuestionnairePage extends StatelessWidget {
                                                   create: (context) => getIt<ParentingPlanCubit>(),
                                                 ),
                                               ],
-                                              child: const AssessmentResultPage(),
+                                              child:  AssessmentResultPage(userId:userId),
                                             ),
                                           ),
                                         );
@@ -165,8 +165,8 @@ class AssessmentQuestionnairePage extends StatelessWidget {
                                 }
                               : null,
                           backgroundColor: state.currentQuestion!.selectedAnswer != null
-                              ? const Color(0xffB6C93B)
-                              : Colors.grey[300],
+                              ?AppColors.primaryNormalActive
+                              : AppColors.primaryNormal,
                         ),
                       ],
                     ),

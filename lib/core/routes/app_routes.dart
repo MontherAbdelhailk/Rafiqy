@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import 'package:rafiq/features/auth/persentation/logic/forget_pass_cubit.dart';
 // Auth Imports
 import 'package:rafiq/features/auth/persentation/logic/signin_cubit.dart';
 import 'package:rafiq/features/auth/persentation/logic/signup_cubit.dart';
+import 'package:rafiq/features/auth/persentation/logic/social_login_cubit.dart';
 import 'package:rafiq/features/auth/persentation/signin_screen.dart';
 import 'package:rafiq/features/auth/persentation/signup_screen.dart';
 import 'package:rafiq/features/auth/persentation/welcome_screen.dart';
@@ -28,6 +30,7 @@ import 'package:rafiq/features/chatbot_and_assessment/persentation/screens/logic
 import 'package:rafiq/features/home/persentation/home_view.dart';
 import 'package:rafiq/features/home/widgets/main_layout.dart';
 import 'package:rafiq/features/home/widgets/post_sheet.dart';
+import 'package:rafiq/features/splash_screen/persentation/screens/splash_screen.dart';
 import 'package:rafiq/features/video/persentation/logic/admin_video_cubit.dart';
 import 'package:rafiq/features/video/persentation/upload_media_video.dart';
 import 'package:rafiq/features/video/persentation/video_view.dart';
@@ -84,6 +87,9 @@ abstract class AppRouter {
   static const String kAssessmentIntro = '/assessmentIntro';
   static const String kAssessmentQuestions = '/assessmentQuestions';
   static const String kAssessmentResult = '/assessmentResult';
+  static const String splashScreen = '/SplashScreen';
+
+  
 
   // ── Auth Guard ──────────────────────────────────────────────────────────────
   // Routes that require authentication
@@ -107,34 +113,49 @@ abstract class AppRouter {
   ];
 
   static final router = GoRouter(
-    initialLocation: homeView,
+initialLocation: splashScreen,
+
     redirect: (context, state) async {
       final location = state.uri.toString();
       final isProtected = _protectedRoutes.any((r) => location.startsWith(r));
 
       if (isProtected) {
         final hasToken = await SecureStorage.hasToken();
-        if (!hasToken) {
-          return welcome;
-        }
-      }
+          print("LOCATION = ${state.uri}");
+  print("HAS TOKEN = $hasToken");
+final firebaseUser = FirebaseAuth.instance.currentUser;
+
+if (!hasToken && firebaseUser == null) {
+  return welcome;
+}      }
       return null;
     },
     routes: [
+
+      GoRoute(
+  path: splashScreen, 
+  builder: (context, state) =>  SplashScreen(),
+),
       GoRoute(path: welcome, builder: (context, state) => const WelcomeView()),
 
       GoRoute(
         path: signIn,
-        builder: (context, state) => BlocProvider(
-          create: (context) => getIt<LoginCubit>(),
-          child: const LoginScreen(),
-        ),
-      ),
+builder: (context, state) => MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (context) => getIt<SocialLoginCubit>()),
+      BlocProvider(create: (context) => getIt<LoginCubit>()),
+    ],
+    child: const LoginScreen(),
+  ),      ),
 
       GoRoute(
         path: signUp,
-        builder: (context, state) => BlocProvider(
-          create: (context) => getIt<SignupCubit>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers:[
+      BlocProvider(create: (context) => getIt<SocialLoginCubit>()),
+      BlocProvider(create: (context) => getIt<SignupCubit>()),
+
+          ],
           child: const SignupScreen(),
         ),
       ),
@@ -187,9 +208,17 @@ abstract class AppRouter {
             builder: (context, state) {
               return FutureBuilder<String?>(
                 future: SecureStorage.getUserId(),
+                
                 builder: (context, snapshot) {
-                  final userId = snapshot.data ?? 'guest';
-                  return BlocProvider(
+                  
+if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+   
+        final userId = snapshot.data ?? 'guest';
+                          return BlocProvider(
                     create: (_) => getIt<ChatBloc>()..getChatHistory(userId),
                     child: ChatPage(),
                   );
@@ -281,8 +310,8 @@ abstract class AppRouter {
           final int childAge = extra['childAge'] as int;
 
           return BlocProvider(
-            create: (context) => getIt<AssessmentCubit>()..loadQuestions(),
-            child: AssessmentQuestionnairePage(
+create: (context) => getIt<AssessmentCubit>()
+  ..loadQuestions(childAge),            child: AssessmentQuestionnairePage(
               userId: userId,
               childAge: childAge,
             ),
@@ -307,7 +336,7 @@ abstract class AppRouter {
                   answeredQuestions:
                       answeredQuestions.cast<AssessmentQuestion>(),
                 ),
-            child: const AssessmentResultPage(),
+            child:  AssessmentResultPage(userId: userId),
           );
         },
       ),

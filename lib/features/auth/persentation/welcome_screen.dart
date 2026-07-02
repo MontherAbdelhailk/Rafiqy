@@ -13,7 +13,7 @@ class WelcomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.babypink,
+      backgroundColor: AppColors.primaryLight,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -24,7 +24,7 @@ class WelcomeView extends StatelessWidget {
                 children: [
                   40.verticalSpace,
                   Text(
-                    'Welcome to Rafiq',
+                    'Welcome to Rafiqy',
                     style: AppTextStyles.bold28merr.copyWith(color: AppColors.secondaryNormal),
                   ),
                   
@@ -59,6 +59,8 @@ class WelcomeView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: CustomButton(
+                                                    borderRadius: 10.r,
+
                           height: 40,
                           text: 'Login',
                           onPressed: () => context.push(AppRouter.signIn),
@@ -70,10 +72,11 @@ class WelcomeView extends StatelessWidget {
                       16.horizontalSpace,
                       Expanded(
                         child: CustomButton(
+                          borderRadius: 10.r,
                           height: 40,
                           text: 'Sign Up',
                           onPressed: () => context.push(AppRouter.signUp),
-                          backgroundColor: AppColors.primaryNormalActive,
+                          backgroundColor: AppColors.primaryNormal,
                           textColor: Colors.white,
                           borderSide: const BorderSide(color: AppColors.primaryNormalActive),
                         ),

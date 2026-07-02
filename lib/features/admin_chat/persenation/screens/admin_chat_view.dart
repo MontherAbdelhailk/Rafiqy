@@ -257,10 +257,10 @@ class _AdminChatRoomViewState extends State<AdminChatRoomView> {
             decoration: BoxDecoration(
               color: isMe ? AppColors.primaryNormal : Colors.white,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.r),
-                topRight: Radius.circular(15.r),
-                bottomLeft: isMe ? Radius.circular(15.r) : Radius.zero,
-                bottomRight: isMe ? Radius.zero : Radius.circular(15.r),
+                topLeft: isMe ? Radius.circular(15.r) : Radius.zero,
+                topRight: isMe ?  Radius.zero: Radius.circular(15.r) ,
+                bottomLeft:  Radius.circular(15.r) ,
+                bottomRight:   Radius.circular(15.r),
               ),
               boxShadow: [
                 if (!isMe)

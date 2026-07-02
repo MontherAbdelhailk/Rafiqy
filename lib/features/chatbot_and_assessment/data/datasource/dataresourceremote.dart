@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:rafiq/core/utils/secure_storage.dart';
 import 'package:rafiq/features/chatbot_and_assessment/data/models/chatmodel.dart';
 
 abstract class ChatRemoteDataSource {
@@ -30,14 +31,18 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       print("--- [CHAT] Sending Request to: $url ---");
       print("--- [CHAT] Payload: $message ---");
 
+      final age = await SecureStorage.getAge();
+
+print("AGE FROM STORAGE = $age");
+
       final response = await dio.post(
         url,
         data: {
-          "user_id": "temp_user_123",
+          "user_id": await SecureStorage.getUserId(),
           "messages": [
             {"role": "user", "content": message}
           ],
-          "child_age": 7
+          "child_age": age ?? 0,
         },
       ).timeout(const Duration(seconds: 15)); 
 
@@ -92,15 +97,7 @@ Future<List<ChatModel>> getChatHistory(String userId) async {
         listData = response.data;
       }
 
-      for (var item in listData) {
-        if (item['user_message'] != null && item['user_message'].toString().trim().isNotEmpty) {
-          extractedMessages.add(ChatModel(
-            text: item['user_message'],
-            isBot: false, // مستخدم
-            timestamp: item['created_at'] != null ? DateTime.parse(item['created_at']) : DateTime.now(),
-          ));
-        }
-        
+for (var item in listData) {
         if (item['bot_reply'] != null && item['bot_reply'].toString().trim().isNotEmpty) {
           extractedMessages.add(ChatModel(
             text: item['bot_reply'],
@@ -108,9 +105,16 @@ Future<List<ChatModel>> getChatHistory(String userId) async {
             timestamp: item['created_at'] != null ? DateTime.parse(item['created_at']) : DateTime.now(),
           ));
         }
-      }
 
-      return extractedMessages;
+        if (item['user_message'] != null && item['user_message'].toString().trim().isNotEmpty) {
+          extractedMessages.add(ChatModel(
+            text: item['user_message'],
+            isBot: false, // مستخدم
+            timestamp: item['created_at'] != null ? DateTime.parse(item['created_at']) : DateTime.now(),
+          ));
+        }
+      }
+            return extractedMessages;
       
     } else {
       print("--- [CHAT GET] Server Returned Error Status ---");

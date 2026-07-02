@@ -13,9 +13,19 @@ class SlotsCubit extends Cubit<SlotsState> {
   List<SlotEntity> _allSlots = [];
 
   Future<void> loadSlots({DateTime? from, DateTime? to}) async {
+
+
+    
     emit(SlotsLoading());
     try {
       final slots = await _repo.getAvailableSlots(from: from, to: to);
+
+    print("Slots count: ${slots.length}");
+    for (final slot in slots) {
+      print(slot.startTime);
+    }
+
+
       _allSlots = slots;
       emit(SlotsLoaded(slots));
     } catch (e) {

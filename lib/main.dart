@@ -26,6 +26,17 @@ void main() async {
   final notificationService = NotificationService();
   await notificationService.initNotifications();
 
+try {
+  String? token = await FirebaseMessaging.instance.getToken();
+  if (token != null) {
+    print("✅ TEST 1: SUCCESS - Firebase Token found: $token");
+  } else {
+    print("❌ TEST 1: FAILED - Token is null");
+  }
+} catch (e) {
+  print("❌ TEST 1: ERROR - Firebase error: $e");
+}
+
   FirebaseMessaging.onMessage.listen((message) {
     notificationService.showLocalNotification(message);
     developer.log("🔥 RECEIVED IN FOREGROUND");
@@ -49,7 +60,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           routerConfig: AppRouter.router,
-          title: 'Rafiq',
+          title: 'Rafiqy',
           theme: _buildTheme(),
         );
       },

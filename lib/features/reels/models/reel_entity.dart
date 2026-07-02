@@ -134,6 +134,7 @@ class ReelReplyEntity {
   });
 
   factory ReelReplyEntity.fromJson(Map<String, dynamic> json) {
+    print("DEBUG: Raw Video URL: ${json['video_url']}"); 
     final createdAtStr = json['created_at'] as String? ?? '';
     String displayTime = '1h ago';
     if (createdAtStr.isNotEmpty) {

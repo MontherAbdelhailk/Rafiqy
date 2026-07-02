@@ -12,6 +12,10 @@
          android:usesCleartextTraffic="true"
         tools:replace="android:label"
         >
+
+        <meta-data
+    android:name="com.google.firebase.messaging.default_notification_icon"
+    android:resource="@drawable/splash"/>
        
         <activity
             android:name=".MainActivity"

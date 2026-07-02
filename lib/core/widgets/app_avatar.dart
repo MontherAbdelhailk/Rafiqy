@@ -35,12 +35,13 @@ class AppAvatar extends StatelessWidget {
   }
 
   String _normalizeUrl(String url) {
+
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
     // Normalize relative paths
     final cleanPath = url.startsWith('/') ? url : '/$url';
-    return 'http://10.0.2.2:5000$cleanPath';
+    return 'http://10.238.1.136:5000$cleanPath';
   }
 
   @override
@@ -86,7 +87,9 @@ class AppAvatar extends StatelessWidget {
       }
     } else {
       // Network URL
+      print("IMAGE URL FROM API = $url");
       final normalized = _normalizeUrl(url);
+      print("NORMALIZED = $normalized");
       final urlWithCacheBuster = normalized.contains('?')
           ? '$normalized&t=$_cacheBuster'
           : '$normalized?t=$_cacheBuster';

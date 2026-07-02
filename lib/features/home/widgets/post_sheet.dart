@@ -31,6 +31,7 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
     }
     
     SecureStorage.getProfileImage().then((url) {
+      print("🔥🔥🔥 القيمة اللي جاية من الستورج هي: $url"); // دي أهم خطوة!
       if (mounted) {
         setState(() {
           _currentUserImage = url;
@@ -70,29 +71,44 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  widget.postToEdit != null ? "Edit Post" : "Create Post",
-                  style: AppTextStyles.bold16cairo.copyWith(color: Colors.black),
-                ),
-                IconButton(
+                                IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.close, size: 22.sp, color: Colors.grey),
+                  icon: Icon(Icons.close, size: 22.sp, color: AppColors.darkblack),
                   visualDensity: VisualDensity.compact,
                 ),
+
+                   Padding(
+                     padding: const EdgeInsets.only(left: 50  ),
+                     child: Text(
+                      widget.postToEdit != null ? "Edit Post" : "Create Post",
+                      style: AppTextStyles.bold20cairo.copyWith(color: AppColors.darkblack),
+                                       ),
+                   ),
+
+                   12.verticalSpace,                  
+                
               ],
             ),
-            const Divider(height: 20), 
+            const Divider(height: 1, thickness: 0.2), 
+                               12.verticalSpace,                  
+            
             
             Row(
               children: [
-                AppAvatar(
-                  imageUrl: _currentUserImage,
-                  radius: 24.r,
-                  name: _currentUserName,
-                ),                
-                12.horizontalSpace,
+
+_currentUserImage != null && _currentUserImage!.isNotEmpty
+    ? CircleAvatar(
+        radius: 24.r, 
+backgroundImage: NetworkImage(
+  _currentUserImage!,
+),      )
+    : CircleAvatar(
+        radius: 24.r, 
+        child: const Icon(Icons.person),
+      ),
+                      12.horizontalSpace,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,11 +121,7 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
                       ),
                       child: Text(
                         "Admin",
-                        style: TextStyle(
-                          color: AppColors.grey3,
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:  AppTextStyles.regular12cairo.copyWith(color: AppColors.grey12),
                       ),
                     ),
                   ],
@@ -126,7 +138,7 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
               child: AppTextFormField(
                 controller: _postController,
                 hintText: "What's on your mind, Rafiq?",
-                hintStyle: AppTextStyles.bold20cairo,
+                hintStyle: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey12),
                 keyboardType: TextInputType.multiline,
                 validator: (value) => null,
                 enabledBorder: InputBorder.none,
@@ -137,10 +149,10 @@ class _CreatePostSheetState extends State<CreatePostSheet> {
             25.verticalSpace,
 
 
-            CustomButton(
+            CustomButton(borderRadius: 10.r,
               text: widget.postToEdit != null ? 'Save Changes' : 'Publish Post',
               onPressed: () => _handlePublish(context),
-              backgroundColor: AppColors.primaryNormalActive,
+              backgroundColor: AppColors.primaryNormal,
               textColor: Colors.white,
               height: 50.h,
             ),

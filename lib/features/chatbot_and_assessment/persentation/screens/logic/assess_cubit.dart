@@ -10,10 +10,10 @@ class AssessmentCubit extends Cubit<AssessmentState> {
 
   AssessmentCubit(this.getAssessmentQuestions, this.repository) : super(AssessmentState());
 
-  Future<void> loadQuestions() async {
-    emit(state.copyWith(status: AssessmentStatus.loading));
+Future<void> loadQuestions(int childAge) async {
+      emit(state.copyWith(status: AssessmentStatus.loading));
     try {
-      final questions = await getAssessmentQuestions();
+final questions = await getAssessmentQuestions(childAge);
       emit(state.copyWith(status: AssessmentStatus.loaded, questions: questions));
     } catch (e) {
       emit(state.copyWith(status: AssessmentStatus.error));

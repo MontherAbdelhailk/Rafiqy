@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq/core/thieming/app_colors.dart';
 
 class AppTextFormField extends StatelessWidget {
   final String hintText;
@@ -41,16 +42,16 @@ class AppTextFormField extends StatelessWidget {
         filled: backgroundColor != null,
         fillColor: backgroundColor,
         hintText: hintText,
-        hintStyle: hintStyle ?? TextStyle(color: Colors.grey, fontSize: 14.sp),
+        hintStyle: hintStyle ?? TextStyle(color: AppColors.grey2, fontSize: 14.sp),
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         
         // لو باصيتي Border هيستخدمه، لو لأ هيستخدم الـ Underline القديم بتاعك
         enabledBorder: enabledBorder ?? const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
+          borderSide: BorderSide(color: AppColors.brown),
         ),
         focusedBorder: focusedBorder ?? const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF96A53A)),
+          borderSide: BorderSide(color: AppColors.brown),
         ),
         errorBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.red),

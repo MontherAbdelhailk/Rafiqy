@@ -14,49 +14,51 @@ class AssessmentChartsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // 1. Confidence Level Card
-        Expanded(
-          child: _buildInfoCard(
-            title: 'CONFIDENCE LEVEL',
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: 80.h,
-                  width: 80.h,
-                  child: CircularProgressIndicator(
-                    value: confidence / 100,
-                    strokeWidth: 10,
-                    backgroundColor: Colors.grey[200],
-                    color: const Color(0xffB6C93B),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch, 
+        children: [
+          Expanded(
+            child: _buildInfoCard(
+              title: 'CONFIDENCE LEVEL',
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    height: 80.h,
+                    width: 80.h,
+                    child: CircularProgressIndicator(
+                      value: confidence / 100,
+                      strokeWidth: 10,
+                      backgroundColor: Colors.grey[200],
+                      color: const Color(0xffB6C93B),
+                    ),
                   ),
-                ),
-                Text('$confidence%', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              ],
+                  Text('$confidence%', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                ],
+              ),
             ),
           ),
-        ),
-        SizedBox(width: 12.w),
-        // 2. Trait Breakdown Card
-        Expanded(
-          child: _buildInfoCard(
-            title: 'TRAIT BREAKDOWN',
-            child: Column(
-              children: [
-                Icon(Icons.hexagon_outlined, size: 60.h, color: Colors.blue[100]),
-                SizedBox(height: 10.h),
-                Wrap(
-                  spacing: 10.w,
-                  runSpacing: 4.h,
-                  children: dimensions.entries.map((e) => _buildSmallScore(_translateDimensionId(e.key), e.value.toInt())).toList(),
-                )
-              ],
+          SizedBox(width: 12.w),
+          // 2. Trait Breakdown Card
+          Expanded(
+            child: _buildInfoCard(
+              title: 'TRAIT BREAKDOWN',
+              child: Column(
+                children: [
+                  Icon(Icons.hexagon_outlined, size: 60.h, color: Colors.blue[100]),
+                  SizedBox(height: 10.h),
+                  Wrap(
+                    spacing: 10.w,
+                    runSpacing: 4.h,
+                    children: dimensions.entries.map((e) => _buildSmallScore(_translateDimensionId(e.key), e.value.toInt())).toList(),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -72,7 +74,7 @@ class AssessmentChartsSection extends StatelessWidget {
         children: [
           Text(title, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
           SizedBox(height: 15.h),
-          child,
+          Expanded(child: Center(child: child)),
         ],
       ),
     );

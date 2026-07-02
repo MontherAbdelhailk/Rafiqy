@@ -12,6 +12,7 @@ import 'package:rafiq/core/widgets/custom_buttom.dart';
 import 'package:rafiq/features/auth/domain/entities/sign_up_entity.dart';
 import 'package:rafiq/features/auth/persentation/logic/signup_cubit.dart';
 import 'package:rafiq/features/auth/persentation/logic/signup_state.dart';
+import 'package:rafiq/features/auth/persentation/logic/social_login_cubit.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -58,8 +59,24 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: "Sign Up"),
+    return BlocListener<SocialLoginCubit, SocialLoginState>(
+  listener: (context, state) {
+    if (state is SocialLoginSuccess) {
+      context.go(AppRouter.homeView);
+    } else if (state is SocialLoginError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.message)),
+      );
+    }
+  },
+  child: 
+    
+    
+    
+    
+    
+     Scaffold(
+      appBar:const CustomAppBar(title: "Sign Up"),
       backgroundColor: AppColors.babypink,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -205,6 +222,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                     builder: (context, state) {
                       return CustomButton(
+                        borderRadius: 10,
                         text: state is SignupLoading ? 'Creating Account...' : 'Sign Up',
                         onPressed: state is SignupLoading
                             ? null
@@ -222,7 +240,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 }
                               },
                         backgroundColor:
-                            state is SignupLoading ? Colors.grey : AppColors.primaryNormalActive,
+                            state is SignupLoading ? Colors.grey : AppColors.primaryNormal,
                         textColor: Colors.white,
                         height: 50.h,
                       );
@@ -246,7 +264,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           onTap: () => context.push(AppRouter.signIn),
                           child: Text("Login",
                               style: AppTextStyles.bold16cairo
-                                  .copyWith(color: AppColors.primaryNormalActive)),
+                                  .copyWith(color: AppColors.primaryNormal)),
                         ),
                       ],
                     ),
@@ -258,6 +276,7 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       ),
+     ),
     );
   }
 
@@ -280,27 +299,25 @@ class _SignupScreenState extends State<SignupScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _socialButton(
+          width: 340.w,
           iconPath: 'assets/images/google.svg',
           label: 'Google',
           onTap: () {
-            // TODO: wire to SocialLoginCubit.signInWithGoogle()
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Google Sign-In coming soon')),
-            );
+  context.read<SocialLoginCubit>().signInWithGoogle();
           },
         ),
-        20.horizontalSpace,
-        _socialButton(
-          iconPath: null,
-          label: 'Apple',
-          icon: const Icon(Icons.apple, size: 28, color: Colors.black),
-          onTap: () {
-            // TODO: wire to SocialLoginCubit.signInWithApple()
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Apple Sign-In coming soon')),
-            );
-          },
-        ),
+     //   20.horizontalSpace,
+        // _socialButton(
+        //   iconPath: null,
+        //   label: 'Apple',
+        //   icon: const Icon(Icons.apple, size: 28, color: Colors.black),
+        //   onTap: () {
+        //     // TODO: wire to SocialLoginCubit.signInWithApple()
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(content: Text('Apple Sign-In coming soon')),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -310,10 +327,12 @@ class _SignupScreenState extends State<SignupScreen> {
     Widget? icon,
     required String label,
     required VoidCallback onTap,
+    double? width,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: width,
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -327,15 +346,21 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (iconPath != null) SvgPicture.asset(iconPath, width: 22.w, height: 22.h),
-            if (icon != null) icon,
-            8.horizontalSpace,
-            Text(label, style: AppTextStyles.bold14cairo.copyWith(color: AppColors.black)),
-          ],
-        ),
+child: Row(
+  mainAxisAlignment: MainAxisAlignment.center, 
+  
+  mainAxisSize: MainAxisSize.max, 
+  
+  children: [
+    if (iconPath != null) SvgPicture.asset(iconPath, width: 22.w, height: 22.h),
+    if (icon != null) icon,
+    8.horizontalSpace,
+    Text(
+      label, 
+      style: AppTextStyles.bold14cairo.copyWith(color: AppColors.black),
+    ),
+  ],
+),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rafiq/core/routes/app_routes.dart'; // أو AppRouter حسب ملف الـ Routing بتاعك
+import 'package:rafiq/core/routes/app_routes.dart'; 
 import 'package:rafiq/core/thieming/app_colors.dart';
 import 'package:rafiq/core/thieming/app_styles.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart';
@@ -21,15 +21,21 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   
-  // 🌟 العلم السحري: الأبلكيشن هيبدأ دايماً بـ false عشان يثبت على شاشة الـ Welcome
   bool _isChatStarted = false; 
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   context.read<ChatBloc>().getChatHistory('tokaa_mohamed_99');
+  // }
+
   void _scrollToBottom() {
+    if (!mounted) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          0.0, 
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
       }
@@ -48,7 +54,8 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: AppColors.babypink,
       appBar: AppBar(
-        title: Text("Rafiq AI", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack)),
+      surfaceTintColor: AppColors.babypink,
+        title: Text("Rafiqy AI", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
@@ -69,52 +76,52 @@ class _ChatPageState extends State<ChatPage> {
 
           List<ChatMessage> messages = [];
           if (state is ChatLoaded) {
-            messages = state.messages;
+            messages = state.messages; 
           } else if (state is ChatLoading) {
             messages = context.read<ChatBloc>().allMessages; 
           }
 
-          return Column(
-            children: [
-              const SizedBox(height: 20),
-              Expanded(
-                // 🚀 الـ Logic الجديد: لو الشات مابتدأش بـ فعل من اليوزر، اعرض الـ Welcome View دايماً!
-                child: !_isChatStarted 
-                    ? _buildWelcomeView(context) 
-                    : _buildChatConversation(messages),
-              ),
-              _buildMessageInput(context),
-            ],
-          );
-        },
+
+  return Column(
+    children: [
+      SizedBox(height: 20.h),
+      Expanded(
+        child: !_isChatStarted 
+            ? _buildWelcomeView(context) 
+            : _buildChatConversation(messages),
+      ),
+      _buildMessageInput(context),
+    ],
+  );
+          },
       ),
     );
   }
 
-  // 1️⃣ شاشة الترحيب (تفتح دايماً كـ بداية أساسية للشاشة)
   Widget _buildWelcomeView(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(height: 50),
+          SizedBox(height: 50.h),
           CircleAvatar(
-            radius: 65,
+            radius: 65.r,
             backgroundColor: AppColors.lightYellow.withOpacity(0.2),
-            child: const Icon(Icons.smart_toy, size: 70, color: AppColors.lightYellow),
+            child: Icon(Icons.smart_toy, size: 70.sp, color: AppColors.lightYellow),
           ),
-          const SizedBox(height: 30),
+          SizedBox(height: 30.h),
           Text("How can I help you today?", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack)),
-          const SizedBox(height: 40),
+          SizedBox(height: 40.h),
           _suggestionCard(context, "Parenting Advice"),
           _suggestionCard(context, "Relationship Help"),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           CustomButton(
             text: 'Start Assessment',
+            backgroundColor: AppColors.primaryNormalHover,
             textColor: Colors.white,
-            textstyle: AppTextStyles.bold16cairo,
-            height: 50,
-            width: 298,
-            borderRadius: 10,
+            textstyle: AppTextStyles.bold16cairo.copyWith(color: Colors.white),
+            height: 50.h,
+            width: 310.w,
+            borderRadius: 10.r,
             onPressed: () {
               context.push(AppRouter.kAssessmentIntro);
             },
@@ -124,69 +131,103 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  // 2️⃣ شاشة عرض المحادثة
   Widget _buildChatConversation(List<ChatMessage> messages) {
     return ListView.builder(
-      controller: _scrollController, 
-      padding: const EdgeInsets.all(16),
+      controller: _scrollController,
+      reverse: true, 
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       itemCount: messages.length,
-      itemBuilder: (context, index) => _buildChatBubble(messages[index]),
+      itemBuilder: (context, index) {
+        return _buildChatBubble(messages[index]);
+      },
     );
   }
 
   Widget _buildChatBubble(ChatMessage msg) {
-    return Align(
-      alignment: msg.isBot ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: msg.isBot ? Colors.white : AppColors.lightYellow,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Text(
-          msg.text,
-          style: AppTextStyles.regular12inter.copyWith(
-            color: msg.isBot ? Colors.black87 : Colors.white,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Row(
+        mainAxisAlignment: msg.isBot ? MainAxisAlignment.start : MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (msg.isBot) ...[
+            CircleAvatar(
+              radius: 18.r,
+              backgroundColor: AppColors.lightYellow, 
+              child: Icon(Icons.smart_toy, size: 18.sp, color: Colors.white),
+            ),
+            SizedBox(width: 8.w),
+          ],
+
+          Flexible(
+            child: Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: msg.isBot ? Colors.white : AppColors.lightYellow, 
+                borderRadius: BorderRadius.only(
+                  topLeft: msg.isBot ? const Radius.circular(0) : Radius.circular(20.r),
+                  topRight: msg.isBot ? Radius.circular(20.r) : const Radius.circular(0),
+                  bottomLeft: Radius.circular(20.r), 
+                  bottomRight: Radius.circular(20.r),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 5.r,
+                    offset: Offset(0, 2.h),
+                  ),
+                ],
+              ),
+              child: Text(
+                msg.text,
+                style: AppTextStyles.regular12inter.copyWith(
+                  color: msg.isBot ? Colors.black87 : Colors.white,
+                  height: 1.4, 
+                ),
+              ),
+            ),
           ),
-        ),
+
+          if (!msg.isBot) ...[
+            SizedBox(width: 8.w),
+            CircleAvatar(
+              radius: 18.r,
+              backgroundColor: const Color(0xFFF0DCD3), 
+              child: Icon(Icons.person, size: 18.sp, color: Colors.white),
+            ),
+          ],
+        ],
       ),
     );
   }
 
-  // 3️⃣ كروت الاقتراحات (Parenting Advice / Relationship Help)
   Widget _suggestionCard(BuildContext context, String title) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _isChatStarted = true; // 🌟 اقلب الشاشة فوراً لشكل المحادثة
+          _isChatStarted = true; 
         });
-        // يكتب الكلمة جوه الـ TextField تلقائياً
         _messageController.text = title;
-        // 💡 اختياري: لو عاوزاها تتبعت تلقائي أول ما يضغط على الكارت، فكي التعليق عن السطرين دول:
-        // context.read<ChatBloc>().sendMessage(title);
-        // _messageController.clear();
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
-        padding: const EdgeInsets.all(18),
+        margin: EdgeInsets.symmetric(horizontal: 30.w, vertical: 8.h),
+        padding: EdgeInsets.all(18.w),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(15.r),
           border: Border.all(color: const Color(0xFFE0E0E0)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: AppTextStyles.bold16cairo.copyWith(color: AppColors.black2)),
-            const Icon(Icons.arrow_forward_ios, size: 10, color: AppColors.lightYellow),
+            Icon(Icons.arrow_forward_ios, size: 10.sp, color: AppColors.lightYellow),
           ],
         ),
       ),
     );
   }
 
-  // 4️⃣ منطقة إدخال الرسائل
   Widget _buildMessageInput(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(15.h),
@@ -204,7 +245,7 @@ class _ChatPageState extends State<ChatPage> {
                 color: AppColors.lightYellow.withOpacity(0.3),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.face, color: Color(0xFF96A53A)),
+              child: Icon(Icons.face, color: const Color(0xFF96A53A), size: 24.sp),
             ),
           ),
           SizedBox(width: 10.w),
@@ -230,7 +271,7 @@ class _ChatPageState extends State<ChatPage> {
                     onTap: () {
                       if (_messageController.text.trim().isNotEmpty) {
                         setState(() {
-                          _isChatStarted = true; // 🌟 إذا كتب رسالة بنفسه وداس إرسال، اقلب الشاشة للمحادثة
+                          _isChatStarted = true; 
                         });
                         context.read<ChatBloc>().sendMessage(_messageController.text);
                         _messageController.clear();
@@ -238,13 +279,13 @@ class _ChatPageState extends State<ChatPage> {
                       }
                     },
                     child: Container(
-                      width: 28,
-                      height: 28,
+                      width: 28.w,
+                      height: 28.h,
                       decoration: BoxDecoration(
                         color: AppColors.lightYellow,
                         borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: const Icon(Icons.send, color: Colors.white, size: 18),
+                      child: Icon(Icons.send, color: Colors.white, size: 18.sp),
                     ),
                   ),
                 ),

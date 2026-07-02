@@ -23,6 +23,11 @@ class PostEntity {
 
   factory PostEntity.fromJson(Map<String, dynamic> json) {
     // Format created_at to time ago or date
+
+
+      print("AUTHOR IMAGE = ${json['author_image']}");
+  print("AUTHOR NAME = ${json['author_name']}");
+
     final createdAtStr = json['created_at'] as String? ?? '';
     String displayTime = '2 hours ago';
     if (createdAtStr.isNotEmpty) {

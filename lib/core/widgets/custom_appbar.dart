@@ -13,7 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     this.actions,
-    this.showLogo = true, // اختيارية لو حبيتي تخفي اللوجو في صفحة معينة
+    this.showLogo = true, 
   });
 
   @override
@@ -38,7 +38,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             Padding(
               padding: EdgeInsets.only(right: 16.w),
               child: SvgPicture.asset(
-                'assets/images/rafig_logo.svg',
+                'assets/images/Group 4.svg',
                 width: 56.w,
                 height: 38.h,
               ),

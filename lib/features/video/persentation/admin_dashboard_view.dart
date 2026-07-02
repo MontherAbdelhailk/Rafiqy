@@ -292,7 +292,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> with SingleTick
               Tab(text: "Actions", icon: Icon(Icons.dashboard_outlined)),
               Tab(text: "Videos", icon: Icon(Icons.video_library_outlined)),
               Tab(text: "Sessions", icon: Icon(Icons.calendar_month_outlined)),
-              Tab(text: "Comments", icon: Icon(Icons.comment_outlined)),
+            //  Tab(text: "Comments", icon: Icon(Icons.comment_outlined)),
             ],
           ),
         ),
@@ -302,7 +302,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> with SingleTick
             _buildActionsTab(context),
             _buildVideosTab(context),
             _buildSessionsTab(),
-            _buildCommentsTab(),
+     //       _buildCommentsTab(),
           ],
         ),
       ),
@@ -886,52 +886,43 @@ class _AdminDashboardViewState extends State<AdminDashboardView> with SingleTick
                         ),
                       ),
                       // ── Right-side: Join / Complete / Cancel or status text ──
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (status == 'scheduled' || status == 'active') ...[
-                            ElevatedButton.icon(
-                              onPressed: canJoin ? () => _adminJoinSession(session) : null,
-                              icon: const Icon(Icons.video_call, size: 16),
-                              label: const Text('Join Call'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryNormal,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: Colors.grey[100],
-                                disabledForegroundColor: Colors.grey[400],
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                ),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                              ),
-                            ),
-                            8.horizontalSpace,
-                            TextButton(
-                              onPressed: () => _adminCompleteSession(session['id']),
-                              child: Text(
-                                'Complete',
-                                style: AppTextStyles.bold12cairo.copyWith(color: Colors.green),
-                              ),
-                            ),
-                            8.horizontalSpace,
-                            TextButton(
-                              onPressed: () => _adminCancelBooking(session['booking_id']),
-                              child: Text(
-                                'Cancel',
-                                style: AppTextStyles.bold12cairo.copyWith(color: AppColors.errorNormal),
-                              ),
-                            ),
-                          ] else ...[
-                            Text(
-                              status == 'completed' ? 'Session completed' : 'Session cancelled',
-                              style: AppTextStyles.regular12cairo.copyWith(color: AppColors.grey1),
-                            ),
-                          ],
-                        ],
-                      ),
+Wrap(
+  alignment: WrapAlignment.end, // بيخلي الأزرار تترص من اليمين للشمال
+  spacing: 4.w,                 // مسافة أفقية صغيرة بين كل زرار والتاني
+  runSpacing: 8.h,              // مسافة رأسية لو الأزرار نزلت سطر جديد
+  children: [
+    if (status == 'scheduled' || status == 'active') ...[
+      ElevatedButton.icon(
+        onPressed: canJoin ? () => _adminJoinSession(session) : null,
+        icon: const Icon(Icons.video_call, size: 16),
+        label: const Text('Join'), // اختصرت الكلمة عشان توفر مساحة
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryNormal,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          elevation: 0,
+        ),
+      ),
+      TextButton(
+        onPressed: () => _adminCompleteSession(session['id']),
+        child: Text('Complete', style: AppTextStyles.bold12cairo.copyWith(color: Colors.green)),
+      ),
+      TextButton(
+        onPressed: () => _adminCancelBooking(session['booking_id']),
+        child: Text('Cancel', style: AppTextStyles.bold12cairo.copyWith(color: AppColors.errorNormal)),
+      ),
+    ] else ...[
+      Text(
+        status == 'completed' ? 'Session completed' : 'Session cancelled',
+        style: AppTextStyles.regular12cairo.copyWith(color: AppColors.grey1),
+      ),
+    ],
+  ],
+),
+
+
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

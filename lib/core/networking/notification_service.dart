@@ -12,12 +12,11 @@ class NotificationService {
   
   final Dio dio = Dio(); 
 
-  final String currentUserId = "USER_ID_HERE"; 
 
   Future<void> initNotifications() async {
 
 const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher'); 
+AndroidInitializationSettings('@drawable/splash');
 
 const InitializationSettings initializationSettings =
     InitializationSettings(android: initializationSettingsAndroid);
@@ -50,10 +49,9 @@ await _localNotificationsPlugin.initialize(initializationSettings);
       await sendTokenToBackend(newToken);
     });
 
-    // ✨ الحتة الجديدة: الاستماع للإشعارات والرسائل الجارية والأبلكيشن مفتوح
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("🔔 [FCM] وصل إشعار جديد حالا!");
-      
+      showLocalNotification(message);
       if (message.notification != null) {
         print("📌 العنوان (Title): ${message.notification!.title}");
         print("📝 النص (Body): ${message.notification!.body}");
@@ -64,6 +62,10 @@ await _localNotificationsPlugin.initialize(initializationSettings);
       }
     });
   }
+
+
+
+
 
   Future<void> saveTokenToFirestore(String token) async {
     try {
@@ -77,6 +79,41 @@ await _localNotificationsPlugin.initialize(initializationSettings);
     }
   }
 
+
+
+
+
+  //   Future<void> sendTokenToBackend(String token) async {
+  //   try {
+  //     final response = await dio.post(
+  //       'https://ribatbackend-production.up.railway.app/register-token',
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       ),
+  //       data: {
+  //         'user_id': currentUserId,
+  //         'fcm_token': token,
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       print("🚀 [Dio] تم إرسال التوكن بنجاح للباك إند الـ Railway!");
+  //     } else {
+  //       print("⚠️ [Dio] الباك إند رجع ستايتس كود غريب: ${response.statusCode}");
+  //     }
+  //   } on DioException catch (e) {
+  //     print("❌ [Dio Exception] فشل إرسال التوكن: ${e.message}");
+  //     if (e.response != null) {
+  //       print("💬 داتا الخطأ من السيرفر: ${e.response?.data}");
+  //     }
+  //   } catch (e) {
+  //     print("❌ خطأ غير متوقع: $e");
+  //   }
+  // }
+
+
   Future<void> sendTokenToBackend(String token) async {
     try {
       final jwtToken = await SecureStorage.getToken();
@@ -85,16 +122,23 @@ await _localNotificationsPlugin.initialize(initializationSettings);
         return;
       }
 
+
+      final String? currentUserId = await SecureStorage.getUserId();
+    if (currentUserId == null) {
+      print("⚠️ [FCM] No User ID found. Cannot register token.");
+      return;
+    }
+
       final response = await dio.post(
-        'http://10.0.2.2:5000/api/chat/register-token',
+        'https://ribatbackend-production.up.railway.app/register-token',
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer $jwtToken',
           },
         ),
         data: {
-          'token': token,
+          'user_id': currentUserId,
+          'fcm_token': token,
         },
       );
 
@@ -121,11 +165,12 @@ await _localNotificationsPlugin.initialize(initializationSettings);
   if (notification != null && android != null) {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'rafiq_channel_id',     
-      'Rafiq Notifications',  
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
+  'rafiq_channel_id',
+  'Rafiq Notifications',
+  icon: '@drawable/splash', // أو ic_notification
+  importance: Importance.max,
+  priority: Priority.high,
+  ticker: 'ticker',
     );
 
     const NotificationDetails notificationDetails =
@@ -143,11 +188,12 @@ await _localNotificationsPlugin.initialize(initializationSettings);
   Future<void> showTextNotification({required String title, required String body}) async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'rafiq_chat_channel',     
-      'Rafiq Chat',  
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
+  'rafiq_chat_channel',
+  'Rafiq Chat',
+  icon: '@drawable/splash', // أو ic_notification
+  importance: Importance.max,
+  priority: Priority.high,
+  ticker: 'ticker',
     );
 
     const NotificationDetails notificationDetails =

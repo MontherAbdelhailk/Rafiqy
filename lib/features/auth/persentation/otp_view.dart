@@ -14,8 +14,8 @@ import 'package:rafiq/features/auth/persentation/logic/forget_pass_state.dart';
 
 
 class OtpView extends StatefulWidget {
-  final String phoneNumber; // بنستلم الرقم من الشاشة اللي فاتت
-
+  final String phoneNumber; 
+  
   const OtpView({super.key, required this.phoneNumber});
 
   @override
@@ -23,10 +23,8 @@ class OtpView extends StatefulWidget {
 }
 
 class _OtpViewState extends State<OtpView> {
-  // 1. عملنا قائمة من الـ Controllers لـ 4 خانات
   final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
   
-  // ميثود بتجمع الأرقام من الـ 4 خانات وتحولهم لـ String واحد
   String get otpCode => _controllers.map((controller) => controller.text).join();
 
   @override
@@ -106,7 +104,7 @@ class _OtpViewState extends State<OtpView> {
                                   );
                                 }
                               },
-                        backgroundColor: AppColors.primaryNormalActive,
+                        backgroundColor: AppColors.primaryNormal,
                         textColor: Colors.white,
                         height: 48.h,
                       );

@@ -9,7 +9,7 @@ class DioConsumer extends ApiConsumer {
   DioConsumer({required this.dio}) {
     // Using 10.0.2.2 allows the Android Emulator to connect to localhost:5000.
     // If you are testing on a real device, replace this with your machine's IP address.
-    dio.options.baseUrl = "http://10.0.2.2:5000/api/"; 
+   dio.options.baseUrl = "http://10.238.1.136:5000/api/";
     dio.interceptors.add(ApiInterceptors()); 
     dio.interceptors.add(LogInterceptor(
       requestBody: true,

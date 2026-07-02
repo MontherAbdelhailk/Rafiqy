@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rafiq/core/routes/app_routes.dart';
 import 'package:rafiq/core/utils/secure_storage.dart';
@@ -138,7 +139,7 @@ class _ReelsViewState extends State<ReelsView> {
                         String fullUrl = reel.videoUrl;
                         if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
                           final cleanPath = fullUrl.startsWith('/') ? fullUrl : '/$fullUrl';
-                          fullUrl = 'http://10.0.2.2:5000$cleanPath';
+                          fullUrl = 'http://10.238.1.136:5000$cleanPath';
                         }
                         SharePlus.instance.share(
                           ShareParams(
@@ -229,7 +230,7 @@ class _ReelsViewState extends State<ReelsView> {
             icon: Icon(Icons.arrow_back, color: Colors.white, size: 26.sp),
           ),
           Text(
-            "Shorts",
+            "Reels",
             style: TextStyle(
               color: Colors.white,
               fontSize: 18.sp,
@@ -237,6 +238,9 @@ class _ReelsViewState extends State<ReelsView> {
               fontFamily: 'Cairo',
             ),
           ),
+
+
+          
           // Admin-only upload button (SRS §3.4 — users cannot upload)
           if (_isAdmin)
             IconButton(
@@ -244,7 +248,11 @@ class _ReelsViewState extends State<ReelsView> {
               icon: Icon(Icons.add_circle_outline, color: Colors.white, size: 26.sp),
             )
           else
-            SizedBox(width: 48.w),
+            SvgPicture.asset(
+              'assets/images/rafig_logo.svg',
+              width: 48.w,
+              height: 32.h,
+            ),
         ],
       ),
     );

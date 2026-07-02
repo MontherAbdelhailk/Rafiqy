@@ -80,7 +80,7 @@ context.push(AppRouter.otpView, extra: phoneController.text);                   
                                     context.read<ForgetPasswordCubit>().sendOtp(phoneController.text);
                                   }
                                 },
-                          backgroundColor: AppColors.primaryNormalActive,
+                          backgroundColor: AppColors.primaryNormal,
                           textColor: Colors.white,
                           height: 48.h,
                         );

@@ -4,7 +4,7 @@ import 'package:rafiq/features/chatbot_and_assessment/domain/entities/assessment
 
 abstract class AssessmentRepository {
 
-  Future<List<AssessmentQuestion>> getQuestions();
+Future<List<AssessmentQuestion>> getQuestions(int childAge);
   Future<AssessmentResult> submitAssessment({
     required String userId,
     required int childAge,

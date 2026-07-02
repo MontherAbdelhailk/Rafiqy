@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq/core/thieming/app_colors.dart';
+import 'package:rafiq/core/thieming/app_styles.dart';
 import 'package:rafiq/core/widgets/apptextformfield.dart';
 
 
@@ -44,11 +46,12 @@ class AppCommentInput extends StatelessWidget {
             child: AppTextFormField(
               controller: controller,
               hintText: "Write a comment...",
+                            hintStyle: AppTextStyles.bold14cairo.copyWith(color: AppColors.secondaryLightactive),
+
               validator: validator ?? (value) => null, // Default validator
-              backgroundColor: const Color(0xFFF1F4F7),
-              // بنعدل الـ Border هنا عشان يبقى Round زي الكومنتات
+              backgroundColor: AppColors.primaryLightHover,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(25.r),
+                borderRadius: BorderRadius.circular(10.r),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
@@ -56,7 +59,7 @@ class AppCommentInput extends StatelessWidget {
                 borderSide: const BorderSide(color: Color(0xFF96A53A)),
               ),
               suffixIcon: IconButton(
-                icon: const Icon(Icons.send_rounded, color: Color(0xFF96A53A)),
+                icon: const Icon(Icons.send_rounded, color: AppColors.secondaryLightactive),
                 onPressed: onSend,
               ),
             ),

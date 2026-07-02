@@ -9,23 +9,27 @@ class AssessmentRepositoryImpl implements AssessmentRepository {
   AssessmentRepositoryImpl(this.dio);
 
   @override
-  Future<List<AssessmentQuestion>> getQuestions() async {
-    try {
-      final response = await dio.get('https://ribatbackend-production.up.railway.app/assessment/questions'); // غيري المسار حسب السيرفر
-      
+Future<List<AssessmentQuestion>> getQuestions(int childAge) async {
+  
+      try {
+final response = await dio.get(
+  'https://ribatbackend-production.up.railway.app/assessment/questions',
+  queryParameters: {
+    "age": childAge,
+  },
+);      
       if (response.statusCode == 200) {
         final data = response.data;
         
-        // استخراج الاسكيل والخيارات (أبدًا، نادرًا، أحيانًا...)
         final Map<String, dynamic> labels = data['scale']['labels'];
         final List<String> optionsList = labels.values.map((e) => e.toString()).toList();
 
-        // عمل Mapping للأسئلة الحقيقية اللي راجعة
         final List<dynamic> questionsJson = data['questions'];
         return questionsJson.map((q) => AssessmentQuestion(
           id: q['id'].toString(),
           questionText: q['text'],
-          options: optionsList, // وضع خيارات الاسكيل الموحدة لكل سؤال
+          options: optionsList, 
+          
         )).toList();
       } else {
         throw Exception("Failed to load questions");
@@ -36,7 +40,8 @@ class AssessmentRepositoryImpl implements AssessmentRepository {
   }
 
 @override
-  Future<AssessmentResult> submitAssessment({ // 🌟 تعديل الـ return type
+  Future<AssessmentResult> submitAssessment({ 
+    
     required String userId,
     required int childAge,
     required List<AssessmentQuestion> answeredQuestions,
@@ -61,7 +66,6 @@ class AssessmentRepositoryImpl implements AssessmentRepository {
         data: body,
       );
 
-      // 🌟 التعديل الجوهري هنا: تحويل الـ response.data لـ كائن الـ AssessmentResult المظبوط فوراً
       if (response.statusCode == 200 && response.data != null) {
         final responseData = response.data as Map<String, dynamic>;
         return AssessmentResult.fromJson(responseData);

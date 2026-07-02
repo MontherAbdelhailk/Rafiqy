@@ -11,5 +11,6 @@ abstract class AuthRepo {
     required String newPassword,
   });
 
+Future<UserEntity> signInWithGoogle();
   
 }

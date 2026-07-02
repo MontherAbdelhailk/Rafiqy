@@ -59,7 +59,7 @@ class ReelsSidebarActions extends StatelessWidget {
           child: AnimatedSwitcher( 
             duration: const Duration(milliseconds: 300),
             child: isAdmin
-                ? Icon(Icons.add_circle_outline, key: const ValueKey("plus"), color: Colors.white, size: 30.sp)
+                ? Icon(Icons.delete, key: const ValueKey("delete"), color: Colors.white, size: 30.sp)
                 : AppAvatar(
                     key: const ValueKey("logo"),
                     imageUrl: 'assets/images/admin_logo.svg',

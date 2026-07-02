@@ -18,6 +18,8 @@ class AdminCreatePostWidget extends StatelessWidget {
       padding: 16.w,
       color: Colors.white,
       borderRadius: 16.r,
+            border: Border.all(color: Colors.grey.shade200),
+
       shadow: BoxShadow(
         color: Colors.black.withOpacity(0.03),
         blurRadius: 10,
@@ -25,15 +27,25 @@ class AdminCreatePostWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          FutureBuilder<String?>(
-            future: SecureStorage.getProfileImage(),
-            builder: (context, snapshot) {
-              return AppAvatar(
-                imageUrl: snapshot.data,
-                radius: 20.r,
-              );
-            },
-          ),
+FutureBuilder<String?>(
+  future: SecureStorage.getProfileImage(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return CircleAvatar(radius: 20.r, backgroundColor: Colors.grey[200]);
+    }
+        print("PROFILE IMAGE = ${snapshot.data}");
+
+ return  AppAvatar(
+  imageUrl: snapshot.data == null
+      ? null
+      : "http://10.238.1.136:5000${snapshot.data}",
+      
+  radius: 20.r,
+  name: "Rafiq",
+);
+
+  },
+),
           12.horizontalSpace,
           Expanded(
             child: GestureDetector(
@@ -41,8 +53,9 @@ class AdminCreatePostWidget extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 decoration: BoxDecoration(
+                
                   borderRadius: BorderRadius.circular(30.r),
-                  border: Border.all(color: const Color(0xFF96A53A), width: 1.5),
+                  border: Border.all(color: Colors.transparent, width: 1.5),
                 ),
                 child: Text(
                   "What's on your mind, Rafiq?",

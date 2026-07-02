@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rafiq/core/thieming/app_colors.dart';
 import 'package:rafiq/core/thieming/app_styles.dart';
 import 'package:rafiq/core/widgets/app_avatar.dart';
 import 'package:rafiq/core/widgets/app_generic_card.dart';
@@ -30,6 +31,11 @@ class RafiqPostCard extends StatelessWidget {
           16.verticalSpace,
           _buildContent(),
           20.verticalSpace,
+       const   Divider(
+thickness: 0.2,  
+  height: 1.0,            ),
+                    10.verticalSpace,
+
           _buildActions(context),
         ],
       ),
@@ -56,19 +62,31 @@ class RafiqPostCard extends StatelessWidget {
           ),
         ),
         if (isAdmin) ...[
-          IconButton(
-            onPressed: () => _showEditPost(context),
-            icon: const Icon(Icons.edit_outlined, color: Colors.lightGreen),
-          ),
-          IconButton(
-            onPressed: () {
+
+          InkWell(
+  onTap:() => _showEditPost(context),
+  child: Padding(
+    padding: EdgeInsets.all(4.w),
+    child: const Icon(Icons.edit_outlined, color: Colors.lightGreen, size: 20),
+  ),
+),
+
+          InkWell(
+  onTap: () {
               context.read<PostsCubit>().deletePost(post.id);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Post deleted successfully")),
               );
             },
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
-          ),
+            
+  child: Padding(
+    padding: EdgeInsets.all(4.w),
+            child: const Icon(Icons.delete_outline, color: Colors.red),
+  ),
+),
+
+
+
         ],
       ],
     );
@@ -90,21 +108,27 @@ class RafiqPostCard extends StatelessWidget {
           },
           child: Icon(
             post.hasLoved ? Icons.favorite : Icons.favorite_border,
-            size: 20.sp,
-            color: post.hasLoved ? Colors.red : Colors.grey,
+            size: 25.sp,
+            color: post.hasLoved ? AppColors.primaryNormal : AppColors.grey12,
           ),
         ),
         4.horizontalSpace,
-        Text('${post.loveCount}', style: const TextStyle(color: Colors.grey)),
-        16.horizontalSpace,
-        IconButton(
-          onPressed: () => _showComments(context),
-          icon: const Icon(Icons.comment_outlined),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
+        Text('${post.loveCount}', style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey12)),
         8.horizontalSpace,
-        Text('${post.commentCount}', style: const TextStyle(color: Colors.grey)),
+InkWell(
+  onTap: () => _showComments(context),
+  customBorder: const CircleBorder(), // عشان الـ Ripple effect تطلع دائرية
+  child: Padding(
+    padding: const EdgeInsets.all(4.0), // تحكمي في مساحة الضغط براحتك
+    child: Icon(
+      Icons.chat_bubble_outline, 
+      color: AppColors.grey12, 
+      size: 25.sp,
+    ),
+  ),
+),
+        4.horizontalSpace,
+        Text('${post.commentCount}', style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey12)),
         const Spacer(),
         GestureDetector(
           onTap: () {
@@ -117,9 +141,9 @@ class RafiqPostCard extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.share_outlined, size: 20.sp, color: Colors.grey),
+              Icon(Icons.share_outlined, size: 20.sp, color: AppColors.grey12),
               4.horizontalSpace,
-              const Text("Share", style: TextStyle(color: Colors.grey)),
+               Text("Share", style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey12)),
             ],
           ),
         ),

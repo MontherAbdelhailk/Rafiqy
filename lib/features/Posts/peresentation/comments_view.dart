@@ -59,20 +59,32 @@ class _CommentsViewState extends State<CommentsView> {
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Comments", style: AppTextStyles.bold16cairo),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.close, size: 22.sp, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text("Comments", style: AppTextStyles.bold16cairo),
+            //       IconButton(
+            //         onPressed: () => Navigator.pop(context),
+            //         icon: Icon(Icons.close, size: 22.sp, color: Colors.grey),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const Divider(height: 1),
+            20.verticalSpace,
+
+Container(
+  width: 80.w,
+  height: 7.h,
+  decoration: BoxDecoration(
+    color: AppColors.grey14, 
+    borderRadius: BorderRadius.circular(15.r), 
+  ),
+),
+            10.verticalSpace,
+
             Expanded(
               child: BlocBuilder<PostsCubit, PostsState>(
                 builder: (context, state) {

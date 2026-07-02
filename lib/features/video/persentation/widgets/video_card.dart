@@ -54,7 +54,7 @@ class VideoCard extends StatelessWidget {
         ),
         CircleAvatar(
           radius: 25.r,
-          backgroundColor: const Color(0xFFC4D35D).withOpacity(0.9),
+          backgroundColor: AppColors.lightYellow,
           child: const Icon(Icons.play_arrow, color: Colors.white, size: 30),
         ),
         Positioned(
@@ -98,24 +98,25 @@ class VideoCard extends StatelessWidget {
                 video.tag,
                 style: AppTextStyles.bold14cairo.copyWith(color: AppColors.lightYellow),
               ),
+                              const Spacer(),
+
               if (onEdit != null || onDelete != null) ...[
-                const Spacer(),
                 if (onEdit != null)
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, color: Colors.lightGreen),
-                    onPressed: onEdit,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                if (onEdit != null && onDelete != null) 12.horizontalSpace,
+InkWell(
+  onTap: onEdit,
+  child: Padding(
+    padding: EdgeInsets.all(4.w),
+    child: Icon(Icons.edit_outlined, color: Colors.lightGreen, size: 20),
+  ),
+),                if (onEdit != null && onDelete != null) 6.horizontalSpace,
                 if (onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                    onPressed: onDelete,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-              ],
+InkWell(
+  onTap: onDelete,
+  child: Padding(
+    padding: EdgeInsets.all(4.w),
+    child: Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+  ),
+),              ],
             ],
           ),
         ],
@@ -140,7 +141,7 @@ class VideoCard extends StatelessWidget {
       );
     } else if (path.startsWith('/uploads/') || path.startsWith('uploads/')) {
       final cleanPath = path.startsWith('/') ? path : '/$path';
-      final fullUrl = 'http://10.0.2.2:5000$cleanPath';
+      final fullUrl = 'http://10.238.1.136:5000$cleanPath';
       return Image.network(
         fullUrl,
         height: 180.h,

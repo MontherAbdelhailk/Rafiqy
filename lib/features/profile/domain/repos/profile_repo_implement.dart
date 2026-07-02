@@ -22,6 +22,8 @@ class ProfileRepoImpl implements ProfileRepo {
       if (profile.profilePicture != null) {
         await SecureStorage.saveProfileImage(profile.profilePicture!);
       }
+      await SecureStorage.saveAge(profile.age);
+
       return profile;
     } on ServerException catch (e) {
       throw Exception(e.errMessage);
@@ -45,6 +47,7 @@ class ProfileRepoImpl implements ProfileRepo {
           "bio": user.bio,
         },
       );
+      await SecureStorage.saveAge(user.age);
     } on ServerException catch (e) {
       throw Exception(e.errMessage);
     } catch (e) {

@@ -123,10 +123,9 @@ getIt.registerFactory(() => ChatBloc(
     getIt<AssessmentRepository>(),
   ));
 
-  // --- Parenting Plan Feature ---
-  getIt.registerLazySingleton<ParentingPlanRepo>(
-    () => ParentingPlanRepo(getIt<ApiConsumer>()),
-  );
+ getIt.registerLazySingleton<ParentingPlanRepo>(
+  () => ParentingPlanRepo(),
+);
 
   getIt.registerFactory<ParentingPlanCubit>(
     () => ParentingPlanCubit(getIt<ParentingPlanRepo>()),

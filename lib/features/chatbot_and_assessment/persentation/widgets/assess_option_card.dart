@@ -17,14 +17,42 @@ class OptionCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryNormalActive : Colors.white,
+          color: isSelected ? AppColors.primaryNormal : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color:AppColors.primaryLightActive),
+          border: Border.all(color:AppColors.primaryLightActive,width: 2),
         ),
         child: Row(
           children: [
-            Expanded(child: Text(text, style: AppTextStyles.bold16inter.copyWith(color: isSelected ? Colors.white : Colors.black87) )),
-            Icon(isSelected ? Icons.check_circle : Icons.radio_button_off, color: AppColors.primaryLightActive),
+            Expanded(
+              child: Text(text, style: AppTextStyles.bold16inter.copyWith(color: isSelected ?
+               Colors.white : Colors.black87) )),
+
+
+isSelected 
+  ?  Container(
+      width: 15,
+      height: 15,
+      padding: const EdgeInsets.all(3), 
+            decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.primaryLightActive, 
+                    width: 2,
+        ),
+      ),
+      child:  Container(
+        decoration:const  BoxDecoration(
+          color: Colors.white, 
+                    shape: BoxShape.circle,
+        ),
+      ),
+    )
+  : const  Icon(
+      Icons.circle_outlined, 
+      color: AppColors.primaryLightActive, 
+      size: 15,
+    ),
+
           ],
         ),
       ),

@@ -95,11 +95,9 @@ class _HomeViewState extends State<HomeView> {
                 _buildTopBar(),
                 20.verticalSpace,
 
-                // ── Section Header ──────────────────────────────────────────
-                Text("Learn Today", style: AppTextStyles.bold20cairo),
+              const  Text("Learn Today", style: AppTextStyles.bold20cairo),
                 14.verticalSpace,
 
-                // ── Auto-sliding Carousel (SRS §3.1) ───────────────────────
                 _buildCarousel(),
                 12.verticalSpace,
 
@@ -107,17 +105,20 @@ class _HomeViewState extends State<HomeView> {
                 _buildDots(),
                 24.verticalSpace,
 
-                // ── Categories (SRS §3.2) ───────────────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Categories", style: AppTextStyles.bold20cairo),
+                const    Text("Categories", style: AppTextStyles.bold20cairo),
                     GestureDetector(
                       onTap: () => context.go(AppRouter.educationalVideosView),
-                      child: Text(
-                        "See all",
-                        style: AppTextStyles.regular14cairo
-                            .copyWith(color: AppColors.primaryNormalActive),
+                      child: 
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Text(
+                          "See all",
+                          style: AppTextStyles.regular14cairo
+                              .copyWith(color: AppColors.primaryNormalActive),
+                        ),
                       ),
                     ),
                   ],
@@ -125,9 +126,10 @@ class _HomeViewState extends State<HomeView> {
                 16.verticalSpace,
 
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CategoryItem(
+                      Padding(
+                    padding: const EdgeInsets.only(left: 5,right:5),
+                  child:  CategoryItem(
                       title: "Parenting",
                       imagePath: "assets/images/mother_daughter.png",
                       onTap: () => context.push(
@@ -135,7 +137,11 @@ class _HomeViewState extends State<HomeView> {
                         extra: 'parenting',
                       ),
                     ),
-                    CategoryItem(
+                      ),
+
+                        Padding(
+                    padding: const EdgeInsets.only(left: 5,right:5),
+              child:      CategoryItem(
                       title: "Marital",
                       imagePath: "assets/images/sons.png",
                       onTap: () => context.push(
@@ -143,7 +149,11 @@ class _HomeViewState extends State<HomeView> {
                         extra: 'marital',
                       ),
                     ),
-                    CategoryItem(
+                        ),
+
+                          Padding(
+                    padding: const EdgeInsets.only(left: 5,right:5),
+                 child:    CategoryItem(
                       title: "Family",
                       imagePath: "assets/images/relation.png",
                       onTap: () => context.push(
@@ -151,19 +161,18 @@ class _HomeViewState extends State<HomeView> {
                         extra: 'family',
                       ),
                     ),
+                          )
                   ],
                 ),
 
                 20.verticalSpace,
 
-                // ── Admin Create Post (SRS §3.3 — Admin only) ──────────────
                 if (_isAdmin) ...[
                   const AdminCreatePostWidget(),
                   16.verticalSpace,
                 ],
 
-                // ── Posts Section (SRS §3.3) ────────────────────────────────
-                Row(
+            const    Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Recent Posts", style: AppTextStyles.bold20cairo),
@@ -216,12 +225,12 @@ class _HomeViewState extends State<HomeView> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Welcome back 👋",
-              style:
-                  AppTextStyles.regular14cairo.copyWith(color: AppColors.grey),
-            ),
-            Text("Rafiq", style: AppTextStyles.bold20cairo),
+            // Text(
+            //   "Welcome back 👋",
+            //   style:
+            //       AppTextStyles.regular14cairo.copyWith(color: AppColors.grey),
+            // ),
+            Text("Home", style: AppTextStyles.bold20cairo),
           ],
         ),
         Row(
@@ -238,9 +247,9 @@ class _HomeViewState extends State<HomeView> {
                 }
               },
             ),
-            8.horizontalSpace,
+            2.horizontalSpace,
             SvgPicture.asset(
-              'assets/images/rafig_logo.svg',
+              'assets/images/Group 4.svg',
               width: 48.w,
               height: 32.h,
             ),

@@ -22,10 +22,34 @@ class ParentingPlanError extends ParentingPlanState {
 class SavePdfLoading extends ParentingPlanState {}
 class SavePdfSuccess extends ParentingPlanState {}
 
+
+
+class GeneratePlanLoading extends ParentingPlanState {}
+class GeneratePlanSuccess extends ParentingPlanState {
+  final List<ParentingPlanEntity> plans;
+  GeneratePlanSuccess(this.plans);
+}
+class GeneratePlanError extends ParentingPlanState {
+  final String message;
+  GeneratePlanError(this.message);
+}
+
 class ParentingPlanCubit extends Cubit<ParentingPlanState> {
   final ParentingPlanRepo _repo;
   ParentingPlanCubit(this._repo) : super(ParentingPlanInitial());
 
+
+Future<void> generateAndFetchPlan(String userId) async {
+    emit(GeneratePlanLoading()); 
+    try {
+      await _repo.generateParentingPlan(userId);
+      
+      final response = await _repo.getParentingPlan(userId);
+      emit(ParentingPlanSuccess(response.plans));
+          } catch (e) {
+      emit(GeneratePlanError(e.toString()));
+    }
+  }
   Future<void> fetchPlan(String userId) async {
     emit(ParentingPlanLoading());
     try {

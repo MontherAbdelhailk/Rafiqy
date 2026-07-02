@@ -22,6 +22,8 @@ class AppColors{
   static const Color grey2= Color(0xFF252528);
   static const Color grey3= Color(0xFF64748B);
   static const Color ligthgrey= Color(0xFFE2E8F0);
+  static const Color ligthgrey1= Color(0xFFF5F3F6);
+  
 
   
 
@@ -29,6 +31,8 @@ class AppColors{
   static const Color babypink= Color(0xFFFFFCF8);
   static const Color black1= Color(0xFF111111);
   static const Color black2= Color(0xFF1E293B);
+  static const Color black3= Color(0xFF1B1B1E);
+  
   
   static const Color darkblack= Color(0xFF0F172A);
   static const Color grey4= Color(0xFF334155);
@@ -41,6 +45,9 @@ class AppColors{
   static const Color grey11= Color(0xFFF8FAFC);
   static const Color grey12= Color(0xFF64748B);
   static const Color grey13= Color(0xFFF1F5F9);
+  static const Color brown= Color(0xFFFA3A3A3);
+  static const Color grey14= Color(0xFFFCBD5E1);
+  
 
   
 

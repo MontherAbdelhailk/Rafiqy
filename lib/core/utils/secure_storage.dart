@@ -8,6 +8,7 @@ class SecureStorage {
   static const _userIdKey = 'user_id';
   static const _usernameKey = 'username';
   static const _profileImageKey = 'profile_image';
+  static const _ageKey = 'age';
 
   // ── Profile Image ──────────────────────────────────────────────────────────
 
@@ -85,4 +86,16 @@ class SecureStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
+
+
+
+static Future<void> saveAge(int age) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setInt(_ageKey, age);
+}
+
+static Future<int?> getAge() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getInt(_ageKey);
+}
 }

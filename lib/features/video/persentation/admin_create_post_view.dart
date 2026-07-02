@@ -100,7 +100,7 @@ class _CreatePostViewState extends State<CreatePostView> {
       String absoluteVideoUrl = path;
       if (!path.startsWith('http://') && !path.startsWith('https://')) {
         final cleanPath = path.startsWith('/') ? path : '/$path';
-        absoluteVideoUrl = 'http://10.0.2.2:5000$cleanPath';
+        absoluteVideoUrl = 'http://10.238.1.136:5000$cleanPath';
       }
       
       _videoController = VideoPlayerController.networkUrl(Uri.parse(absoluteVideoUrl))
@@ -223,7 +223,7 @@ class _CreatePostViewState extends State<CreatePostView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildLabel("Age Stage / Subcategory"),
+                            _buildLabel("Age Stage/Subcategory"),
                             10.verticalSpace,
                             _buildSubcategoryDropdown(),
                           ],
@@ -455,7 +455,7 @@ class _CreatePostViewState extends State<CreatePostView> {
       );
     } else if (path.startsWith('/uploads/') || path.startsWith('uploads/')) {
       final cleanPath = path.startsWith('/') ? path : '/$path';
-      final fullUrl = 'http://10.0.2.2:5000$cleanPath';
+      final fullUrl = 'http://10.238.1.136:5000$cleanPath';
       return Image.network(
         fullUrl,
         width: 70.w,
@@ -516,8 +516,9 @@ class _CreatePostViewState extends State<CreatePostView> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: _selectedSubcategory,
-          isExpanded: true,
+  value: _selectedSubcategory,
+  isExpanded: true,
+          
           onChanged: (String? val) {
             if (val != null) {
               setState(() {
@@ -597,8 +598,14 @@ class _CreatePostViewState extends State<CreatePostView> {
     );
   }
 
-  Widget _buildLabel(String text) => Text(text, style: AppTextStyles.bold14cairo.copyWith(color: AppColors.secondaryNormal));
-
+Widget _buildLabel(String text) => Text(
+  text,
+  maxLines: 1,
+  overflow: TextOverflow.ellipsis,
+  style: AppTextStyles.bold14cairo.copyWith(
+    color: AppColors.secondaryNormal,
+  ),
+);
   Widget _buildCircleIcon(IconData icon, Color bg) => CircleAvatar(
         radius: 16.r,
         backgroundColor: bg,

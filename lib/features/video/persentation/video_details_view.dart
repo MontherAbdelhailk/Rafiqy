@@ -52,7 +52,7 @@ class _VideoDetailsViewState extends State<VideoDetailsView> {
       return path;
     }
     final cleanPath = path.startsWith('/') ? path : '/$path';
-    return 'http://10.0.2.2:5000$cleanPath';
+    return 'http://10.238.1.136:5000$cleanPath';
   }
 
   Future<void> _triggerView() async {
@@ -238,13 +238,13 @@ class _VideoDetailsViewState extends State<VideoDetailsView> {
           Container(
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              color: isActive ? const Color(0xFFE4ECD0) : const Color(0xFFF1F4E8), 
+              color: isActive ? const Color(0xFFE4ECD0) : AppColors.lightYellow.withOpacity(0.3), 
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 20.sp,
-              color: const Color(0xFF9DB454), 
+              color: AppColors.lightYellow, 
             ),
           ),
           10.horizontalSpace,
@@ -321,7 +321,7 @@ class _VideoDetailsViewState extends State<VideoDetailsView> {
       );
     } else if (path.startsWith('/uploads/') || path.startsWith('uploads/')) {
       final cleanPath = path.startsWith('/') ? path : '/$path';
-      final fullUrl = 'http://10.0.2.2:5000$cleanPath';
+      final fullUrl = 'http://10.238.1.136:5000$cleanPath';
       return Image.network(
         fullUrl,
         height: 100.h,

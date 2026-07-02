@@ -1,5 +1,3 @@
-// features/assessment/domain/entities/assessment_result.dart
-
 class AssessmentResult {
   final String mainTrait;
   final String description;
@@ -18,30 +16,26 @@ class AssessmentResult {
   });
 
   factory AssessmentResult.fromJson(Map<String, dynamic> json) {
-    // 1. الدخول إلى كائن الـ profile والـ meta
-    final profile = json['profile'] ?? {};
-    final meta = json['assessment_meta'] ?? {};
-    final listPersonalities = profile['possible_personalities'] as List? ?? [];
+    final listPersonalities = json['possible_personalities'] as List? ?? [];
 
-    // 2. تحديد الشخصية الرئيسية (أول عنصر في الـ list هو الأعلى تطابقاً دائمًا)
-    String mainTraitName = "المفكر";
-    String mainDescription = "بحاجة إلى تحديات ذهنية وبيئة هادئة.";
+    String mainTraitName = "The Planner";
+    String mainDescription = "Orderly, methodical, and motivated by structure, routine, and clear goals.";
     
     if (listPersonalities.isNotEmpty) {
       final topPersonality = listPersonalities.first;
-      mainTraitName = topPersonality['name'] ?? topPersonality['id'] ?? "المفكر";
-      mainDescription = "يحتاج إلى: ${topPersonality['need'] ?? 'وقت هادئ + تحديات ذهنية'}";
+      mainTraitName = topPersonality['name'] ?? "The Planner";
+      mainDescription = topPersonality['description'] ?? "Orderly, methodical, and motivated by structure, routine, and clear goals.";
     }
 
-    final traitScoresMap = profile['trait_scores'] as Map<String, dynamic>? ?? {};
+    final traitScoresMap = json['trait_scores'] as Map<String, dynamic>? ?? {};
     List<TraitScore> parsedScores = [];
     
     traitScoresMap.forEach((key, value) {
       parsedScores.add(
         TraitScore(
-          name: key, // سيأخذ: focus, leadership, sociability... إلخ
+          name: key,
           score: (value as num).toInt(),
-          description: _generateTraitDescription(key, (value as num).toInt()), // توليد وصف ديناميكي باللغة العربية
+          description: _generateTraitDescription(key, (value as num).toInt()),
         ),
       );
     });
@@ -49,21 +43,23 @@ class AssessmentResult {
     Map<String, double> parsedDimensions = {};
     for (var p in listPersonalities) {
       final String id = p['id'] ?? 'unknown';
-      final double match = (p['match'] as num? ?? 0).toDouble();
-      parsedDimensions[id] = match; // يملأ الـ Map بـ (thinker: 60, independent: 57...)
+      final double match = (p['match_pct'] as num? ?? p['match'] as num? ?? 0).toDouble();
+      parsedDimensions[id] = match;
     }
 
     if (parsedDimensions.isEmpty) {
-      parsedDimensions = {"thinker": 60, "independent": 57, "planner": 55, "challenger": 52};
+      parsedDimensions = {"planner": 80, "sensitive": 75, "explorer": 72, "helper": 72};
     }
 
     return AssessmentResult(
       mainTrait: mainTraitName,
       description: mainDescription,
       scores: parsedScores,
-      confidenceScore: json['assessment_confidence'] ?? meta['confidence'] ?? 0,
+      confidenceScore: json['confidence'] ?? json['assessment_meta']?['confidence'] ?? 80,
       dimensionScores: parsedDimensions,
-      guidelines: json['note'] != null ? [json['note']] : [profile['note'] ?? "النتيجة إرشادية وليست تشخيصًا."],
+      guidelines: json['recommendations'] != null 
+          ? List<String>.from(json['recommendations']) 
+          : [json['note'] ?? "النتيجة إرشادية وليست تشخيصًا طبيًا."],
     );
   }
 
@@ -72,9 +68,19 @@ class AssessmentResult {
       case 'focus':
         return score > 50 ? 'يمتلك الطفل قدرة ممتازة على التركيز وإنهاء المهام.' : 'قد يحتاج الطفل لتمارين لزيادة الانتباه.';
       case 'leadership':
-        return score > 50 ? 'يظهر مهارات قيادية عالية وقدرة على المبادرة.' : 'يحتاج إلى تعزيز الثقة بالنفس والمبادرة الجماعية.';
+        return score > 50 ? 'يظهر مهارات قيادية عالية وقدرة على المبادرة.' : 'يحتاج إلى تعزيز الثقة بالنفس والمبادرة.';
       case 'sociability':
         return score > 50 ? 'طفل اجتماعي للغاية ومحب لتكوين الصداقات.' : 'يميل الطفل إلى الهدوء والاستقلالية الاجتماعية.';
+      case 'empathy':
+        return 'يقيس مدى تفاعل وفهم الطفل لمشاعر الآخرين ودعمهم الملاحظ بـ $score%.';
+      case 'self_control':
+        return 'يعكس قدرة الطفل على التحكم في انفعالاته وتنظيم سلوكه اليومي.';
+      case 'curiosity':
+        return 'يدل على حب الطفل للاكتشاف وطرح الأسئلة والتعلم المستمر.';
+      case 'adaptability':
+        return 'يقيس مرونة الطفل في التعامل مع التغييرات والمواقف الجديدة.';
+      case 'sensitivity':
+        return 'يعكس مدى تأثر الطفل بالبيئة المحيطة به واستجابته للمؤثرات.';
       default:
         return 'سمة شخصية تم قياسها بناءً على اختبار رفيق الإرشادي.';
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart'; 
 import 'package:go_router/go_router.dart';
@@ -30,16 +31,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.babypink,
+      backgroundColor: AppColors.primaryLight,
       body: SafeArea(
         child: Center(
-          child: Lottie.asset(
-            'assets/animation/new_annimation.json',
+          child: SvgPicture.asset(
+            'assets/images/Group 4.svg',
             width: 370.w,  
-            height: 197.h, 
+            height: 220.h, 
             fit: BoxFit.contain,
-            repeat: false,
-          animate: true,
           ),
         ),
       ),

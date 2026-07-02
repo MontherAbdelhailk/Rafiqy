@@ -64,16 +64,19 @@ class _AdminInboxViewState extends State<AdminInboxView> {
         backgroundColor: AppColors.babypink,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.grey2, size: 20),
+          icon: const Icon(Icons.arrow_back, color: AppColors.grey2, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text("Admin Inbox", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.grey2)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.tune, color: AppColors.grey2), 
-            onPressed: () {},
-          )
-        ],
+IconButton(
+  icon: const RotatedBox(
+    quarterTurns: 1, 
+    child: Icon(Icons.tune, color: AppColors.grey2),
+  ),
+  onPressed: () {
+  },
+)        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -83,13 +86,14 @@ class _AdminInboxViewState extends State<AdminInboxView> {
             // 🔍 Search Bar
             TextField(
               controller: _searchController,
+              
               decoration: InputDecoration(
                 hintText: "Search conversations...",
                 hintStyle: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey9),
                 prefixIcon: const Icon(Icons.search, color: AppColors.grey9),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.symmetric(vertical: 14.h),
+                contentPadding: EdgeInsets.symmetric(vertical: 16.h),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.r),
                   borderSide: BorderSide.none,
@@ -134,6 +138,8 @@ class _AdminInboxViewState extends State<AdminInboxView> {
                     separatorBuilder: (context, index) => Divider(height: 1.h, color: Colors.grey.shade100),
                     itemBuilder: (context, index) {
                       final chat = state.conversations[index];
+                      print("👤 Name: ${chat.fullName}");
+print("🖼️ Profile: ${chat.profilePicture}");
 
                       return ListTile(
                         contentPadding: EdgeInsets.symmetric(vertical: 8.h),

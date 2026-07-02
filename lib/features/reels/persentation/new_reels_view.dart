@@ -60,11 +60,20 @@ class _NewReelViewState extends State<NewReelView> {
     return Scaffold(
       backgroundColor: AppColors.babypink,
       appBar: AppBar(
-        title: const Text("New Reel", style: TextStyle(color: Colors.black, fontFamily: 'Cairo')),
+        title:  Text("New Reel", style: AppTextStyles.bold24cairo.copyWith(color: AppColors.secondaryDark)),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.babypink,
         elevation: 0.5,
         leading: const BackButton(color: Colors.black),
+        actions: [
+          Padding(
+            padding:  EdgeInsets.only(right: 20.w),
+            child: Text(
+              "Publish",
+              style: AppTextStyles.bold20cairo.copyWith(color: AppColors.primaryNormal),
+            ),
+          ),
+        ],
       ),
       body: BlocListener<ReelsCubit, ReelsState>(
         listener: (context, state) {
@@ -108,22 +117,48 @@ class _NewReelViewState extends State<NewReelView> {
               20.verticalSpace,
 
               // caption field
-              TextField(
-                controller: _captionController,
-                decoration: InputDecoration(
-                  hintText: "Write a caption...",
-                  hintStyle: AppTextStyles.regular18inter.copyWith(color: AppColors.grey6),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r), 
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                maxLines: 3,
-              ),
-              20.verticalSpace,
+Stack(
+
+  children: [
+    TextField(
+      
+      controller: _captionController,
+      maxLines: 1,
+      decoration:
+       InputDecoration(
+
+        hintText: "Write a caption...",
+
+        hintStyle: AppTextStyles.regular16cairo.copyWith(
+          color: AppColors.grey6,
+        ),
+        contentPadding: EdgeInsets.fromLTRB(
+          16.w,
+          120.h, // مساحة لكلمة Caption
+          16.w,
+          20.h,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    ),
+
+    Positioned(
+      top: 12.h,
+      left: 16.w,
+      child: Text(
+        "Caption",
+        style: AppTextStyles.regular16cairo.copyWith(
+          color: AppColors.grey6,
+        ),
+      ),
+    ),
+  ],
+),              20.verticalSpace,
 
               // Allow Comments switch
               buildSettingRow(
@@ -150,6 +185,7 @@ class _NewReelViewState extends State<NewReelView> {
               _isPublishing
                   ? const Center(child: CircularProgressIndicator(color: Color(0xFF96A53A)))
                   : CustomButton(
+                    borderRadius: 10.r,
                       text: 'Publish',
                       onPressed: () {
                         final caption = _captionController.text.trim();
@@ -167,7 +203,7 @@ class _NewReelViewState extends State<NewReelView> {
                               allowComments,
                             );
                       },
-                      backgroundColor: AppColors.primaryNormalActive,
+                      backgroundColor: AppColors.primaryNormal,
                       textColor: Colors.white,
                       height: 50.h,
                     ),
@@ -189,7 +225,7 @@ class _NewReelViewState extends State<NewReelView> {
       height: 80.h,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5), 
+        color: AppColors.ligthgrey1, 
         borderRadius: BorderRadius.circular(15), 
       ),
       child: ListTile(
@@ -200,21 +236,19 @@ class _NewReelViewState extends State<NewReelView> {
             color: Colors.white, 
             borderRadius: BorderRadius.circular(10), 
           ),
-          child: Icon(icon, color: Colors.grey[700], size: 22),
+        child: Icon(icon, color: AppColors.primaryDarkHover, size: 22),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-            fontFamily: 'Cairo',
-          ),
-        ),
-        trailing: Switch(
+      title: Text(
+        title,
+        style:AppTextStyles.bold14cairo.copyWith(color: AppColors.black3)
+      ),
+              trailing: Switch(
           value: value,
           onChanged: onChanged,
-          activeThumbColor: const Color(0xFF96A53A),
-        ),
+thumbColor: WidgetStateProperty.all(Colors.white), 
+  
+  activeTrackColor: AppColors.primaryNormal, 
+  inactiveTrackColor: AppColors.ligthgrey1,        ),
       ),
     );
   }

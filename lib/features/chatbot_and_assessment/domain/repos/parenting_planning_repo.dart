@@ -3,31 +3,56 @@ import 'package:rafiq/core/networking/api_consumer.dart';
 import 'package:rafiq/features/chatbot_and_assessment/data/models/parenting_plan_model.dart';
 
 class ParentingPlanRepo {
-  final ApiConsumer _apiConsumer;
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: "https://ribatbackend-production.up.railway.app/",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    ),
+  );
 
-  ParentingPlanRepo(this._apiConsumer);
+
+
+
+
+  Future<ParentingPlanResponse> generateParentingPlan(String userId) async {
+    try {
+      final response = await dio.post(
+        "generate-parenting-plan/$userId",
+      );
+      
+      return ParentingPlanResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<ParentingPlanResponse> getParentingPlan(String userId) async {
     try {
-      final response = await _apiConsumer.get('parenting-plans/$userId');
+      final response = await dio.get(
+        "parenting-plans/$userId",
+      );
       
-      return ParentingPlanResponse.fromJson(response);
+      return ParentingPlanResponse.fromJson(response.data);
     } catch (e) {
       rethrow;
     }
   }
 
 
-Future<List<int>> downloadPlanPdf(String userId) async { // 👈 غيرتها لـ String لو الـ userId عندك String
+Future<List<int>> downloadPlanPdf(String userId) async { 
   try {
-    final response = await _apiConsumer.get(
-      'export-plan-pdf/$userId',
-      options: Options(responseType: ResponseType.bytes), 
-    );
+      final response = await dio.get(
+        "export-plan-pdf/$userId",
+        options: Options(responseType: ResponseType.bytes),
+      );
     
-    return List<int>.from(response); 
+    return List<int>.from(response.data); 
   } catch (e) {
     rethrow;
   }
 }
+
+
 }

@@ -7,6 +7,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepo profileRepo;
   ProfileCubit(this.profileRepo) : super(ProfileInitial());
 
+
+
   Future<void> getProfile() async {
     emit(ProfileLoading());
     try {

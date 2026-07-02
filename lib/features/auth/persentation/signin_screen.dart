@@ -11,6 +11,7 @@ import 'package:rafiq/core/widgets/custom_appbar.dart';
 import 'package:rafiq/core/widgets/custom_buttom.dart';
 import 'package:rafiq/features/auth/persentation/logic/signin_cubit.dart';
 import 'package:rafiq/features/auth/persentation/logic/signin_state.dart';
+import 'package:rafiq/features/auth/persentation/logic/social_login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,8 +55,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+Widget build(BuildContext context) {
+  return BlocListener<SocialLoginCubit, SocialLoginState>(
+    listener: (context, state) {
+      if (state is SocialLoginSuccess) {
+            print("NAVIGATE HOME");
+
+        context.go(AppRouter.homeView);
+      } else if (state is SocialLoginError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(state.message)),
+        );
+      }
+    },
+    child:
+
+
+
+
+     Scaffold(
       backgroundColor: AppColors.babypink,
       appBar: const CustomAppBar(title: "Login"),
       resizeToAvoidBottomInset: true,
@@ -67,11 +85,12 @@ class _LoginScreenState extends State<LoginScreen> {
               key: formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
+
+                
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 30.h),
 
-                  // ── Username field (SRS §1.2 — login with username) ─────
                   _buildLabel('Username'),
                   SizedBox(height: 10.h),
                   AppTextFormField(
@@ -84,7 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 14.h),
 
-                  // ── Password ────────────────────────────────────────────
                   _buildLabel('Password'),
                   SizedBox(height: 10.h),
                   ValueListenableBuilder<bool>(
@@ -149,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                         backgroundColor:
-                            state is LoginLoading ? Colors.grey : AppColors.primaryNormalActive,
+                            state is LoginLoading ? Colors.grey : AppColors.primaryNormal,
                         textColor: Colors.white,
                         height: 50.h,
                       );
@@ -176,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Text(
                             "Sign Up",
                             style: AppTextStyles.bold16cairo
-                                .copyWith(color: AppColors.primaryNormalActive),
+                                .copyWith(color: AppColors.primaryNormal),
                           ),
                         ),
                       ],
@@ -189,6 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+     ),
     );
   }
 
@@ -213,26 +232,28 @@ class _LoginScreenState extends State<LoginScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _socialButton(
+          width: 340.w,
           iconPath: 'assets/images/google.svg',
           label: 'Google',
           onTap: () {
-            // TODO: wire to SocialLoginCubit.signInWithGoogle()
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Google Sign-In coming soon')),
-            );
+        context.read<SocialLoginCubit>().signInWithGoogle();
+        
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(content: Text('Google Sign-In coming soon')),
+            // );
           },
         ),
-        20.horizontalSpace,
-        _socialButton(
-          iconPath: null,
-          label: 'Apple',
-          icon: const Icon(Icons.apple, size: 28, color: Colors.black),
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Apple Sign-In coming soon')),
-            );
-          },
-        ),
+        // 20.horizontalSpace,
+        // _socialButton(
+        //   iconPath: null,
+        //   label: 'Apple',
+        //   icon: const Icon(Icons.apple, size: 28, color: Colors.black),
+        //   onTap: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(content: Text('Apple Sign-In coming soon')),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
@@ -242,10 +263,12 @@ class _LoginScreenState extends State<LoginScreen> {
     Widget? icon,
     required String label,
     required VoidCallback onTap,
+    double? width,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: width,
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -259,15 +282,21 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (iconPath != null) SvgPicture.asset(iconPath, width: 22.w, height: 22.h),
-            if (icon != null) icon,
-            8.horizontalSpace,
-            Text(label, style: AppTextStyles.bold14cairo.copyWith(color: AppColors.black)),
-          ],
-        ),
+child: Row(
+  mainAxisAlignment: MainAxisAlignment.center, 
+  
+  mainAxisSize: MainAxisSize.max, 
+  
+  children: [
+    if (iconPath != null) SvgPicture.asset(iconPath, width: 22.w, height: 22.h),
+    if (icon != null) icon,
+    8.horizontalSpace,
+    Text(
+      label, 
+      style: AppTextStyles.bold14cairo.copyWith(color: AppColors.black),
+    ),
+  ],
+),
       ),
     );
   }
@@ -290,8 +319,9 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Text(
           "Forgot password?",
           style: AppTextStyles.regular14cairo.copyWith(
-            color: Colors.black54,
+            color: AppColors.primaryNormal,
             decoration: TextDecoration.underline,
+            decorationColor: AppColors.primaryNormal
           ),
         ),
       ),

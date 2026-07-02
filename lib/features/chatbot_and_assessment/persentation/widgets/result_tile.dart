@@ -27,26 +27,47 @@ class ResultTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: Colors.grey[200]!),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(23),
-                  color: AppColors.lightYellow.withOpacity(0.3)
-                ),
-                child: Icon(icon, color: const Color(0xffB6C93B), size: 24.sp)),
-              SizedBox(width: 12.w),
-              Text(title, style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey3)),
-              const Spacer(),
-              Text('$score%', style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: const Color(0xffB6C93B))),
-            ],
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(23),
+              color: AppColors.lightYellow.withOpacity(0.3),
+            ),
+            child: Icon(icon, color: const Color(0xffB6C93B), size: 24.sp),
           ),
-          SizedBox(height: 4.h),
-          Text(description, style: TextStyle(color: Colors.grey[600], fontSize: 14.sp)),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      title, 
+                      style: AppTextStyles.bold16cairo.copyWith(color: AppColors.grey2),
+                    ),
+                    SizedBox(width: 6.w), // مسافة صغيرة تفصل القوسين عن الكلمة
+                    Text(
+                      '($score%)', 
+                      style: TextStyle(
+                        fontSize: 16.sp, 
+                        fontWeight: FontWeight.bold, 
+                        color: AppColors.grey2,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  description,  
+                  style: AppTextStyles.regular14cairo.copyWith(color: AppColors.grey3),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -42,6 +42,7 @@ Center(
               const Spacer(),
 
               CustomButton(
+                borderRadius: 10.r,
                 text: 'Return to Home',
                 onPressed: () {
                     context.push(AppRouter.profileView);

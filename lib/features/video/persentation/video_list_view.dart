@@ -34,6 +34,7 @@ class _VideosListBody extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.babypink,
       appBar: AppBar(
+        surfaceTintColor: AppColors.babypink,
         title: Text(
           stageTitle,
           style: AppTextStyles.bold24cairo.copyWith(color: AppColors.darkblack),
@@ -42,7 +43,7 @@ class _VideosListBody extends StatelessWidget {
         backgroundColor: AppColors.babypink,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.darkblack),
+          icon: const Icon(Icons.arrow_back, color: AppColors.darkblack),
           onPressed: () => Navigator.pop(context),
         ),
       ),

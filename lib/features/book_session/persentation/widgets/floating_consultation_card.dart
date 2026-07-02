@@ -37,7 +37,7 @@ class FloatingConsultationCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.all( Radius.circular(24.r)),
                   child: Image.asset(
-                    'assets/images/0to3.png',
+                    'assets/images/consultation.avif',
                     height: 260.h,
                     width: double.infinity,
                     fit: BoxFit.cover,

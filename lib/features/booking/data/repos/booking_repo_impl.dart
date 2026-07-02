@@ -90,7 +90,6 @@ class BookingRepoImpl implements BookingRepo {
     return (response['data'] as Map<String, dynamic>?) ?? {};
   }
 
-  // ─── Sessions ────────────────────────────────────────────────────────────────
 
   @override
   Future<List<SessionEntity>> getMySessions({String? status}) async {
